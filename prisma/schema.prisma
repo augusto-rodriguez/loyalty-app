@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ NEGOCIO ============
+model Business {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  email     String   @unique
+  password  String
+  phone     String?
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  loyaltyPrograms LoyaltyProgram[]
+}
+
+// ============ PROGRAMA DE FIDELIZACIÓN ============
+model LoyaltyProgram {
+  id                String   @id @default(uuid())
+  businessId        String
+  name              String
+  description       String?
+  stampsRequired    Int      @default(10)
+  rewardTitle       String
+  rewardDescription String?
+  isActive          Boolean  @default(true)
+  qrCode            String   @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customerCards CustomerCard[]
+
+  @@index([businessId])
+}
+
+// ============ CLIENTE FINAL ============
+model Customer {
+  id        String   @id @default(uuid())
+  phone     String?  @unique
+  email     String?  @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  cards CustomerCard[]
+}
+
+// ============ TARJETA DEL CLIENTE ============
+model CustomerCard {
+  id               String    @id @default(uuid())
+  customerId       String
+  loyaltyProgramId String
+  stampsCount      Int       @default(0)
+  isCompleted      Boolean   @default(false)
+  completedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  customer       Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  loyaltyProgram LoyaltyProgram @relation(fields: [loyaltyProgramId], references: [id], onDelete: Cascade)
+  visits         Visit[]
+  reward         Reward?
+
+  @@unique([customerId, loyaltyProgramId])
+  @@index([loyaltyProgramId])
+  @@index([customerId])
+}
+
+// ============ REGISTRO DE VISITAS ============
+model Visit {
+  id             String   @id @default(uuid())
+  customerCardId String
+  createdAt      DateTime @default(now())
+
+  customerCard CustomerCard @relation(fields: [customerCardId], references: [id], onDelete: Cascade)
+
+  @@index([customerCardId])
+  @@index([createdAt])
+}
+
+// ============ RECOMPENSA CANJEADA ============
+model Reward {
+  id             String    @id @default(uuid())
+  customerCardId String    @unique
+  isRedeemed     Boolean   @default(false)
+  redeemedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  customerCard CustomerCard @relation(fields: [customerCardId], references: [id], onDelete: Cascade)
+}
