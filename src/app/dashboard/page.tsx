@@ -12,13 +12,35 @@ interface Stats {
   totalPrograms: number;
 }
 
+const emptyStats: Stats = {
+  totalCustomers: 0,
+  totalVisits: 0,
+  recentVisits: 0,
+  pendingRewards: 0,
+  redeemedRewards: 0,
+  totalPrograms: 0,
+};
+
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch("/api/dashboard")
-      .then((r) => r.json())
-      .then((data) => setStats(data.stats));
+      .then((r) => {
+        if (!r.ok) throw new Error(`Error ${r.status}`);
+        return r.json();
+      })
+      .then((data) => {
+        setStats(data.stats || emptyStats);
+      })
+      .catch((err) => {
+        console.error("Dashboard fetch error:", err);
+        setError(err.message);
+        setStats(emptyStats);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const cards = stats
@@ -44,7 +66,13 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {!stats ? (
+      {error && (
+        <div className="mb-4 bg-red-50 text-red-600 text-sm rounded-lg p-3">
+          Error al cargar estadísticas: {error}
+        </div>
+      )}
+
+      {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
             <div
@@ -73,7 +101,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {stats && stats.totalPrograms === 0 && (
+      {stats && stats.totalPrograms === 0 && !loading && (
         <div className="mt-8 bg-indigo-50 rounded-xl p-8 text-center">
           <p className="text-lg text-indigo-900 font-medium mb-2">
             ¡Bienvenido! Crea tu primer programa de fidelización
