@@ -45,12 +45,12 @@ export default function DashboardLayout({
   }
 
   const navItems = [
-    { href: "/dashboard", label: "📊 Inicio", exact: true },
-    { href: "/dashboard/programs", label: "🎯 Programas", exact: false },
+    { href: "/dashboard", label: "Inicio", icon: "📊", exact: true },
+    { href: "/dashboard/programs", label: "Programas", icon: "🎯", exact: false },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 pb-16 md:pb-0">
       {/* Top bar */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -58,7 +58,9 @@ export default function DashboardLayout({
             🎯 Fidelio
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-500">{business?.name}</span>
+            <span className="text-sm text-slate-500 hidden sm:inline">
+              {business?.name}
+            </span>
             <button
               onClick={handleLogout}
               className="text-sm text-slate-400 hover:text-red-500"
@@ -70,7 +72,7 @@ export default function DashboardLayout({
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-6 flex gap-6">
-        {/* Sidebar */}
+        {/* Sidebar — solo desktop */}
         <nav className="w-56 shrink-0 hidden md:block">
           <div className="space-y-1">
             {navItems.map((item) => {
@@ -87,7 +89,7 @@ export default function DashboardLayout({
                       : "text-slate-600 hover:bg-slate-100"
                   }`}
                 >
-                  {item.label}
+                  {item.icon} {item.label}
                 </Link>
               );
             })}
@@ -97,6 +99,29 @@ export default function DashboardLayout({
         {/* Content */}
         <main className="flex-1 min-w-0">{children}</main>
       </div>
+
+      {/* Bottom navigation — solo móvil */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 md:hidden z-10">
+        <div className="flex justify-around items-center h-16">
+          {navItems.map((item) => {
+            const active = item.exact
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition ${
+                  active ? "text-indigo-600" : "text-slate-400"
+                }`}
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span className="text-xs font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
