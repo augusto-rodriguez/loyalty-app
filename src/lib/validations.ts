@@ -95,6 +95,6 @@ export function validate<T>(schema: z.ZodSchema<T>, data: unknown):
   if (result.success) {
     return { success: true, data: result.data };
   }
-  const firstError = result.error.errors[0];
+  const firstError = result.error.issues[0];
   return { success: false, error: firstError.message };
 }
