@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const { name, description, stampsRequired, rewardTitle, rewardDescription } =
+    const { name, description, stampsRequired, cooldownMinutes, rewardTitle, rewardDescription } =
       validation.data;
 
     const qrCode = uuidv4().replace(/-/g, "").substring(0, 12).toUpperCase();
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
         name,
         description: description || null,
         stampsRequired,
+        cooldownMinutes: cooldownMinutes ?? 60,
         rewardTitle,
         rewardDescription: rewardDescription || null,
         qrCode,

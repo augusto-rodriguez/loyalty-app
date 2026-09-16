@@ -3,12 +3,29 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const cooldownOptions = [
+  { value: 0, label: "Sin cooldown (testing)" },
+  { value: 15, label: "15 minutos" },
+  { value: 30, label: "30 minutos" },
+  { value: 60, label: "1 hora" },
+  { value: 120, label: "2 horas" },
+  { value: 240, label: "4 horas" },
+  { value: 480, label: "8 horas" },
+  { value: 720, label: "12 horas" },
+  { value: 1440, label: "24 horas" },
+  { value: 10080, label: "1 semana" },
+  { value: 20160, label: "2 semanas" },
+  { value: 30240, label: "3 semanas" },
+  { value: 43200, label: "1 mes" },
+];
+
 export default function NewProgramPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     description: "",
     stampsRequired: 10,
+    cooldownMinutes: 60,
     rewardTitle: "",
     rewardDescription: "",
   });
@@ -42,12 +59,12 @@ export default function NewProgramPage() {
     }
   }
 
-  // Plantillas rápidas
   const templates = [
     {
       label: "☕ Cafetería",
       name: "Café de fidelidad",
       stamps: 8,
+      cooldown: 60,
       reward: "Café gratis",
       desc: "Acumula 8 cafés y el siguiente es gratis",
     },
@@ -55,6 +72,7 @@ export default function NewProgramPage() {
       label: "💇 Barbería/Peluquería",
       name: "Cortes frecuentes",
       stamps: 5,
+      cooldown: 1440,
       reward: "Corte gratis",
       desc: "Cada 5 cortes, el siguiente va por la casa",
     },
@@ -62,6 +80,7 @@ export default function NewProgramPage() {
       label: "🍕 Restaurante",
       name: "Cliente frecuente",
       stamps: 10,
+      cooldown: 240,
       reward: "Plato gratis",
       desc: "10 visitas y disfruta un plato por cuenta nuestra",
     },
@@ -69,6 +88,7 @@ export default function NewProgramPage() {
       label: "💪 Gym/Estudio",
       name: "Entrenamiento fiel",
       stamps: 12,
+      cooldown: 720,
       reward: "Mes con 50% dcto",
       desc: "12 sesiones y obtén descuento en tu siguiente mes",
     },
@@ -79,6 +99,7 @@ export default function NewProgramPage() {
       name: t.name,
       description: t.desc,
       stampsRequired: t.stamps,
+      cooldownMinutes: t.cooldown,
       rewardTitle: t.reward,
       rewardDescription: t.desc,
     });
@@ -160,6 +181,27 @@ export default function NewProgramPage() {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">
+            ⏱️ Tiempo entre sellos (cooldown)
+          </label>
+          <select
+            value={form.cooldownMinutes}
+            onChange={(e) => update("cooldownMinutes", parseInt(e.target.value))}
+            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
+          >
+            {cooldownOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-slate-400 mt-1">
+            Tiempo mínimo que debe pasar entre cada sello del mismo cliente.
+            Evita que alguien escanee varias veces seguidas.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
             🎁 Recompensa
           </label>
           <input
@@ -206,6 +248,11 @@ export default function NewProgramPage() {
               → {form.rewardTitle || "Premio"}
             </span>
           </div>
+          <p className="text-xs text-slate-400 mt-2">
+            ⏱️ Cooldown:{" "}
+            {cooldownOptions.find((o) => o.value === form.cooldownMinutes)?.label ||
+              `${form.cooldownMinutes} min`}
+          </p>
         </div>
 
         <button

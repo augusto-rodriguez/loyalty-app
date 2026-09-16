@@ -29,6 +29,7 @@ model LoyaltyProgram {
   name              String
   description       String?
   stampsRequired    Int      @default(10)
+  cooldownMinutes   Int      @default(60)
   rewardTitle       String
   rewardDescription String?
   isActive          Boolean  @default(true)

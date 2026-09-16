@@ -9,12 +9,8 @@ export async function GET(
 ) {
   const { qrCode } = await params;
 
-  // Validar formato del QR code
   if (!/^[A-Z0-9]{8,16}$/.test(qrCode)) {
-    return NextResponse.json(
-      { error: "Código QR inválido" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Código QR inválido" }, { status: 400 });
   }
 
   const program = await prisma.loyaltyProgram.findUnique({
@@ -52,11 +48,9 @@ export async function POST(
   const { qrCode } = await params;
 
   try {
-    // Rate limiting por IP
     const rl = await rateLimit(getIP(req), "scan");
     if (!rl.success) return rl.response!;
 
-    // Validar formato del QR
     if (!/^[A-Z0-9]{8,16}$/.test(qrCode)) {
       return NextResponse.json({ error: "Código QR inválido" }, { status: 400 });
     }
@@ -133,16 +127,18 @@ export async function POST(
       });
     }
 
-    // 4. Cooldown: mínimo 1 hora entre visitas
+    // 4. Cooldown: usar el valor del programa
+    const cooldownMs = program.cooldownMinutes * 60 * 1000;
+
     const lastVisit = await prisma.visit.findFirst({
       where: { customerCardId: card.id },
       orderBy: { createdAt: "desc" },
     });
 
-    if (lastVisit) {
-      const hoursSinceLastVisit =
-        (Date.now() - new Date(lastVisit.createdAt).getTime()) / (1000 * 60 * 60);
-      if (hoursSinceLastVisit < 1) {
+    if (lastVisit && cooldownMs > 0) {
+      const timeSinceLastVisit = Date.now() - new Date(lastVisit.createdAt).getTime();
+      if (timeSinceLastVisit < cooldownMs) {
+        const minutesLeft = Math.ceil((cooldownMs - timeSinceLastVisit) / 60000);
         return NextResponse.json({
           card: {
             stampsCount: card.stampsCount,
@@ -151,7 +147,7 @@ export async function POST(
             rewardAvailable: false,
             rewardTitle: program.rewardTitle,
           },
-          message: "Ya registraste tu visita recientemente. Vuelve más tarde.",
+          message: `Ya registraste tu visita recientemente. Vuelve en ${minutesLeft} minuto${minutesLeft !== 1 ? "s" : ""}.`,
           cooldown: true,
         });
       }

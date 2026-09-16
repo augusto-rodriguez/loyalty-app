@@ -43,6 +43,12 @@ export const createProgramSchema = z.object({
     .int()
     .min(2, "Mínimo 2 sellos")
     .max(50, "Máximo 50 sellos"),
+  cooldownMinutes: z
+    .number()
+    .int()
+    .min(0, "El cooldown no puede ser negativo")
+  .max(43200, "Máximo 1 mes")
+    .default(60),
   rewardTitle: z
     .string()
     .min(2, "La recompensa debe tener al menos 2 caracteres")
@@ -55,6 +61,7 @@ export const updateProgramSchema = z.object({
   name: z.string().min(2).max(100).trim().optional(),
   description: z.string().max(500).trim().optional(),
   stampsRequired: z.number().int().min(2).max(50).optional(),
+  cooldownMinutes: z.number().int().min(0).max(43200).optional(),
   rewardTitle: z.string().min(2).max(200).trim().optional(),
   rewardDescription: z.string().max(500).trim().optional(),
   isActive: z.boolean().optional(),

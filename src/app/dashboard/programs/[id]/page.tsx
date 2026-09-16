@@ -16,6 +16,7 @@ interface Program {
   name: string;
   description: string | null;
   stampsRequired: number;
+  cooldownMinutes: number;
   rewardTitle: string;
   rewardDescription: string | null;
   isActive: boolean;
@@ -99,6 +100,14 @@ export default function ProgramDetailPage({
               <div className="flex justify-between">
                 <span className="text-slate-500">Recompensa</span>
                 <span className="font-semibold">{program.rewardTitle}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Cooldown</span>
+                <span className="font-semibold">
+                  {program.cooldownMinutes >= 60
+                    ? `${program.cooldownMinutes / 60}h`
+                    : `${program.cooldownMinutes} min`}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Estado</span>
