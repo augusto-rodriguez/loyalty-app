@@ -22,20 +22,21 @@ model Business {
 }
 
 model LoyaltyProgram {
-  id                String   @id @default(uuid())
+  id                String    @id @default(uuid())
   businessId        String
   name              String
   description       String?
-  stampsRequired    Int      @default(10)
-  cooldownMinutes   Int      @default(60)
-  requiresPin       Boolean  @default(false)
-  pinSeed           String?
+  stampsRequired    Int       @default(10)
+  cooldownMinutes   Int       @default(60)
+  requiresPin       Boolean   @default(false)
+  currentPin        String?
+  pinExpiresAt      DateTime?
   rewardTitle       String
   rewardDescription String?
-  isActive          Boolean  @default(true)
-  qrCode            String   @unique
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  isActive          Boolean   @default(true)
+  qrCode            String    @unique
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
   customerCards CustomerCard[]

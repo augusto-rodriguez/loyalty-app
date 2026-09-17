@@ -252,12 +252,12 @@ export default function NewProgramPage() {
               <p className="text-sm text-slate-500 leading-relaxed">
                 Cuando esta opción está activada, el cliente necesita ingresar un
                 código de 4 dígitos para registrar su visita. Este código lo tiene
-                el personal del local y <strong>cambia automáticamente cada día</strong>.
+                el personal del local y <strong>cambia automáticamente cada 10 minutos</strong>.
               </p>
               <p className="text-sm text-slate-500 leading-relaxed mt-2">
-                Esto evita que alguien registre sellos sin estar físicamente en tu
-                negocio (por ejemplo, compartiendo el QR por WhatsApp). El PIN del
-                día se muestra en el panel de tu programa.
+                Esto evita que alguien comparta el código en un grupo de WhatsApp y
+                lo use todo el día. Si sospechas que alguien tiene el código actual,
+                puedes actualizarlo al instante desde el panel del programa.
               </p>
               <div className="flex gap-4 mt-3 text-xs text-slate-400">
                 <span className="flex items-center gap-1">
@@ -266,7 +266,7 @@ export default function NewProgramPage() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock size={12} className="text-indigo-500" />
-                  Cambia cada día
+                  Rota cada 10 min
                 </span>
               </div>
             </div>

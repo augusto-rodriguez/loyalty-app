@@ -1,33 +1,35 @@
 import crypto from "crypto";
 
-/**
- * Genera un PIN de 4 dígitos determinístico basado en un seed y la fecha actual.
- * El mismo seed + misma fecha = mismo PIN.
- * Cambia automáticamente a medianoche UTC.
- */
-export function generateDailyPin(seed: string): string {
-  const today = new Date().toISOString().split("T")[0]; // "2026-09-17"
-  const hash = crypto
-    .createHmac("sha256", seed)
-    .update(today)
-    .digest("hex");
+export const PIN_VALIDITY_MINUTES = 10;
 
-  // Tomar los primeros 4 dígitos del hash convertido a número
-  const num = parseInt(hash.substring(0, 8), 16) % 10000;
+/**
+ * Genera un PIN aleatorio de 4 dígitos
+ */
+export function generateRandomPin(): string {
+  const num = crypto.randomInt(0, 10000);
   return num.toString().padStart(4, "0");
 }
 
 /**
- * Genera un seed aleatorio para un programa nuevo
+ * Calcula la fecha de expiración a partir de ahora
  */
-export function generatePinSeed(): string {
-  return crypto.randomBytes(16).toString("hex");
+export function getExpirationDate(minutes: number = PIN_VALIDITY_MINUTES): Date {
+  return new Date(Date.now() + minutes * 60 * 1000);
 }
 
 /**
- * Verifica si un PIN ingresado coincide con el PIN actual del programa
+ * Verifica si un PIN ya expiró
  */
-export function verifyPin(seed: string, inputPin: string): boolean {
-  const correctPin = generateDailyPin(seed);
-  return inputPin === correctPin;
+export function isPinExpired(expiresAt: Date | string | null): boolean {
+  if (!expiresAt) return true;
+  return new Date(expiresAt).getTime() < Date.now();
+}
+
+/**
+ * Minutos restantes hasta que expire el PIN (redondeado hacia arriba)
+ */
+export function minutesUntilExpiration(expiresAt: Date | string | null): number {
+  if (!expiresAt) return 0;
+  const diff = new Date(expiresAt).getTime() - Date.now();
+  return Math.max(0, Math.ceil(diff / 60000));
 }

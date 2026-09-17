@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { scanSchema, validate } from "@/lib/validations";
 import { rateLimit, getIP } from "@/lib/rate-limit";
-import { verifyPin } from "@/lib/pin";
+import { isPinExpired } from "@/lib/pin";
 
 export async function GET(
   _req: Request,
@@ -79,14 +79,22 @@ export async function POST(
     }
 
     // 2. Verificar PIN si es requerido
-    if (program.requiresPin && program.pinSeed) {
+    if (program.requiresPin) {
       if (!pin || pin.length === 0) {
         return NextResponse.json(
           { error: "Este programa requiere un PIN. Pídelo al personal del local." },
           { status: 400 }
         );
       }
-      if (!verifyPin(program.pinSeed, pin)) {
+
+      if (!program.currentPin || isPinExpired(program.pinExpiresAt)) {
+        return NextResponse.json(
+          { error: "El PIN expiró. Pide el código actualizado al personal del local." },
+          { status: 403 }
+        );
+      }
+
+      if (pin !== program.currentPin) {
         return NextResponse.json(
           { error: "PIN incorrecto. Verifica con el personal del local." },
           { status: 403 }
@@ -129,7 +137,6 @@ export async function POST(
       });
     }
 
-    // Si ya está completa
     if (card.isCompleted) {
       return NextResponse.json({
         card: {

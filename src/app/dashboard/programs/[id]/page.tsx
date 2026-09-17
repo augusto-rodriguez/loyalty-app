@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift, ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift, ShieldCheck, Eye, EyeOff, RefreshCw } from "lucide-react";
 
 interface CustomerCard {
   id: string;
@@ -41,6 +41,8 @@ export default function ProgramDetailPage({
   const [deleting, setDeleting] = useState(false);
   const [dailyPin, setDailyPin] = useState<string | null>(null);
   const [showPin, setShowPin] = useState(false);
+  const [minutesLeft, setMinutesLeft] = useState<number>(0);
+  const [regenerating, setRegenerating] = useState(false);
 
   useEffect(() => {
     fetch(`/api/programs/${id}`)
@@ -60,12 +62,38 @@ export default function ProgramDetailPage({
   }, [id]);
 
   useEffect(() => {
-    if (program?.requiresPin) {
+    if (!program?.requiresPin) return;
+
+    function fetchPin() {
       fetch(`/api/programs/${id}/pin`)
         .then((r) => r.json())
-        .then((data) => { if (data.pin) setDailyPin(data.pin); });
+        .then((data) => {
+          if (data.pin) {
+            setDailyPin(data.pin);
+            setMinutesLeft(data.minutesLeft ?? 0);
+          }
+        });
     }
+
+    fetchPin();
+    const interval = setInterval(fetchPin, 30000); // revisar cada 30s
+    return () => clearInterval(interval);
   }, [program, id]);
+
+  async function handleRegeneratePin() {
+    setRegenerating(true);
+    try {
+      const res = await fetch(`/api/programs/${id}/pin`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        setDailyPin(data.pin);
+        setMinutesLeft(data.minutesLeft ?? 0);
+        setShowPin(true);
+      }
+    } finally {
+      setRegenerating(false);
+    }
+  }
 
   async function handleRedeem(rewardId: string) {
     if (!confirm("¿Confirmar canje de recompensa?")) return;
@@ -210,7 +238,7 @@ export default function ProgramDetailPage({
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <ShieldCheck size={18} className="text-indigo-600" />
-                  <h3 className="font-semibold text-indigo-900 text-sm">PIN del día</h3>
+                  <h3 className="font-semibold text-indigo-900 text-sm">PIN actual</h3>
                 </div>
                 <button
                   onClick={() => setShowPin(!showPin)}
@@ -223,8 +251,16 @@ export default function ProgramDetailPage({
                 {showPin ? dailyPin : "••••"}
               </p>
               <p className="text-xs text-indigo-400 text-center mt-2">
-                Comparte este código con tu personal. Cambia cada día automáticamente.
+                Expira en {minutesLeft} minuto{minutesLeft !== 1 ? "s" : ""}
               </p>
+              <button
+                onClick={handleRegeneratePin}
+                disabled={regenerating}
+                className="flex items-center justify-center gap-1.5 w-full mt-3 py-2 text-xs font-medium bg-white border border-indigo-300 text-indigo-600 rounded-lg hover:bg-indigo-100 disabled:opacity-50"
+              >
+                <RefreshCw size={13} className={regenerating ? "animate-spin" : ""} />
+                {regenerating ? "Actualizando..." : "Actualizar ahora"}
+              </button>
             </div>
           )}
 
