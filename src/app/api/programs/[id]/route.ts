@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { updateProgramSchema, validate } from "@/lib/validations";
 
-// GET: detalle del programa con clientes
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -20,7 +20,7 @@ export async function GET(
       customerCards: {
         include: {
           customer: true,
-          visits: { orderBy: { createdAt: "desc" }, take: 5 },
+          visits: { orderBy: { createdAt: "desc" } },
           reward: true,
         },
         orderBy: { updatedAt: "desc" },
@@ -35,7 +35,6 @@ export async function GET(
   return NextResponse.json({ program });
 }
 
-// PATCH: actualizar programa
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -46,26 +45,49 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const data = await req.json();
 
-  const program = await prisma.loyaltyProgram.updateMany({
-    where: { id, businessId: session.businessId },
-    data: {
+  try {
+    const body = await req.json();
+    const validation = validate(updateProgramSchema, body);
+
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+
+    const data = validation.data;
+
+    // Si se está desactivando el PIN, limpiar el PIN actual también
+    const updateData: Record<string, unknown> = {
       ...(data.name && { name: data.name }),
       ...(data.description !== undefined && { description: data.description }),
-      ...(data.stampsRequired && { stampsRequired: Number(data.stampsRequired) }),
+      ...(data.stampsRequired && { stampsRequired: data.stampsRequired }),
+      ...(data.cooldownMinutes !== undefined && { cooldownMinutes: data.cooldownMinutes }),
       ...(data.rewardTitle && { rewardTitle: data.rewardTitle }),
-      ...(data.rewardDescription !== undefined && {
-        rewardDescription: data.rewardDescription,
-      }),
+      ...(data.rewardDescription !== undefined && { rewardDescription: data.rewardDescription }),
       ...(data.isActive !== undefined && { isActive: data.isActive }),
-    },
-  });
+    };
 
-  return NextResponse.json({ updated: program.count });
+    if (data.requiresPin !== undefined) {
+      updateData.requiresPin = data.requiresPin;
+      if (!data.requiresPin) {
+        // Al desactivar, limpiar el PIN vigente
+        updateData.currentPin = null;
+        updateData.pinExpiresAt = null;
+      }
+    }
+
+    const result = await prisma.loyaltyProgram.updateMany({
+      where: { id, businessId: session.businessId },
+      data: updateData,
+    });
+
+    return NextResponse.json({ updated: result.count });
+  } catch (error) {
+    console.error("Update program error:", error);
+    return NextResponse.json({ error: "Error al actualizar" }, { status: 500 });
+  }
 }
 
-// DELETE: eliminar programa
 export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }

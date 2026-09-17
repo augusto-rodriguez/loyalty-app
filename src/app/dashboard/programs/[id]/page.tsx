@@ -3,7 +3,15 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift, ShieldCheck, Eye, EyeOff, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift,
+  ShieldCheck, Eye, EyeOff, RefreshCw, ChevronDown, ChevronUp, Clock,
+} from "lucide-react";
+
+interface Visit {
+  id: string;
+  createdAt: string;
+}
 
 interface CustomerCard {
   id: string;
@@ -11,6 +19,7 @@ interface CustomerCard {
   isCompleted: boolean;
   customer: { id: string; name: string | null; phone: string | null; email: string | null };
   reward: { id: string; isRedeemed: boolean; redeemedAt: string | null } | null;
+  visits: Visit[];
 }
 
 interface Program {
@@ -25,6 +34,15 @@ interface Program {
   isActive: boolean;
   qrCode: string;
   customerCards: CustomerCard[];
+}
+
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString("es-CL", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export default function ProgramDetailPage({
@@ -43,8 +61,14 @@ export default function ProgramDetailPage({
   const [showPin, setShowPin] = useState(false);
   const [minutesLeft, setMinutesLeft] = useState<number>(0);
   const [regenerating, setRegenerating] = useState(false);
+  const [togglingPin, setTogglingPin] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   useEffect(() => {
+    loadProgram();
+  }, [id]);
+
+  function loadProgram() {
     fetch(`/api/programs/${id}`)
       .then((r) => r.json())
       .then((data) => {
@@ -59,7 +83,7 @@ export default function ProgramDetailPage({
         });
       })
       .finally(() => setLoading(false));
-  }, [id]);
+  }
 
   useEffect(() => {
     if (!program?.requiresPin) return;
@@ -76,9 +100,9 @@ export default function ProgramDetailPage({
     }
 
     fetchPin();
-    const interval = setInterval(fetchPin, 30000); // revisar cada 30s
+    const interval = setInterval(fetchPin, 30000);
     return () => clearInterval(interval);
-  }, [program, id]);
+  }, [program?.requiresPin, id]);
 
   async function handleRegeneratePin() {
     setRegenerating(true);
@@ -95,14 +119,31 @@ export default function ProgramDetailPage({
     }
   }
 
+  async function handleTogglePin() {
+    if (!program) return;
+    const newValue = !program.requiresPin;
+    setTogglingPin(true);
+    try {
+      const res = await fetch(`/api/programs/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requiresPin: newValue }),
+      });
+      if (res.ok) {
+        setProgram((prev) => prev ? { ...prev, requiresPin: newValue } : prev);
+        if (!newValue) {
+          setDailyPin(null);
+        }
+      }
+    } finally {
+      setTogglingPin(false);
+    }
+  }
+
   async function handleRedeem(rewardId: string) {
     if (!confirm("¿Confirmar canje de recompensa?")) return;
     const res = await fetch(`/api/rewards/${rewardId}/redeem`, { method: "POST" });
-    if (res.ok) {
-      const r = await fetch(`/api/programs/${id}`);
-      const data = await r.json();
-      setProgram(data.program);
-    }
+    if (res.ok) loadProgram();
   }
 
   function copyScanUrl() {
@@ -194,45 +235,40 @@ export default function ProgramDetailPage({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Verificación PIN</span>
-                <span className={`font-semibold ${program.requiresPin ? "text-indigo-600" : "text-slate-400"}`}>
-                  {program.requiresPin ? "Activada" : "Desactivada"}
-                </span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-slate-500">Clientes</span>
                 <span className="font-semibold">{program.customerCards.length}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
-            <h3 className="font-semibold text-slate-900 mb-3">Código QR</h3>
-            {qrDataUrl && (
-              <img src={qrDataUrl} alt="QR Code" className="mx-auto mb-3 rounded-lg" width={200} height={200} />
-            )}
-            <p className="text-xs text-slate-400 mb-3">Imprime este QR y ponlo en tu local</p>
-            <div className="space-y-2">
-              <button
-                onClick={copyScanUrl}
-                className="flex items-center justify-center gap-1.5 w-full py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50"
-              >
-                {copied ? <Check size={14} /> : <Copy size={14} />}
-                {copied ? "Copiado" : "Copiar link"}
-              </button>
-              {qrDataUrl && (
-                <a
-                  href={qrDataUrl}
-                  download={`qr-${program.qrCode}.png`}
-                  className="flex items-center justify-center gap-1.5 w-full py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                >
-                  <Download size={14} />
-                  Descargar QR
-                </a>
-              )}
+          {/* Toggle de PIN */}
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={18} className="text-indigo-600" />
+                <span className="text-sm font-medium text-slate-700">
+                  Verificación por PIN
+                </span>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={program.requiresPin}
+                  onChange={handleTogglePin}
+                  disabled={togglingPin}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-300 peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 peer-disabled:opacity-50" />
+              </label>
             </div>
+            <p className="text-xs text-slate-400 mt-2">
+              {program.requiresPin
+                ? "Tus clientes deben ingresar el PIN del personal para sumar sellos."
+                : "Actívalo para reforzar la seguridad y evitar que compartan el QR."}
+            </p>
           </div>
 
+          {/* PIN actual */}
           {program.requiresPin && dailyPin && (
             <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-5">
               <div className="flex items-center justify-between mb-2">
@@ -263,6 +299,33 @@ export default function ProgramDetailPage({
               </button>
             </div>
           )}
+
+          <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
+            <h3 className="font-semibold text-slate-900 mb-3">Código QR</h3>
+            {qrDataUrl && (
+              <img src={qrDataUrl} alt="QR Code" className="mx-auto mb-3 rounded-lg" width={200} height={200} />
+            )}
+            <p className="text-xs text-slate-400 mb-3">Imprime este QR y ponlo en tu local</p>
+            <div className="space-y-2">
+              <button
+                onClick={copyScanUrl}
+                className="flex items-center justify-center gap-1.5 w-full py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50"
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? "Copiado" : "Copiar link"}
+              </button>
+              {qrDataUrl && (
+                <a
+                  href={qrDataUrl}
+                  download={`qr-${program.qrCode}.png`}
+                  className="flex items-center justify-center gap-1.5 w-full py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                >
+                  <Download size={14} />
+                  Descargar QR
+                </a>
+              )}
+            </div>
+          </div>
 
           <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
             <button
@@ -298,59 +361,90 @@ export default function ProgramDetailPage({
             </div>
           ) : (
             <div className="space-y-3">
-              {program.customerCards.map((card) => (
-                <div key={card.id} className="bg-white rounded-xl border border-slate-200 p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <p className="font-medium text-slate-900">{card.customer.name || "Cliente"}</p>
-                      <p className="text-sm text-slate-400">{card.customer.phone || card.customer.email}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-slate-900">{card.stampsCount}/{program.stampsRequired}</p>
-                      <p className="text-xs text-slate-400">sellos</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-1.5 flex-wrap mb-3">
-                    {[...Array(program.stampsRequired)].map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
-                          i < card.stampsCount
-                            ? "bg-indigo-500 text-white"
-                            : "bg-slate-100 text-slate-400 border border-slate-200"
-                        }`}
-                      >
-                        {i < card.stampsCount ? "✓" : i + 1}
+              {program.customerCards.map((card) => {
+                const isExpanded = expandedCard === card.id;
+                return (
+                  <div key={card.id} className="bg-white rounded-xl border border-slate-200 p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <p className="font-medium text-slate-900">{card.customer.name || "Cliente"}</p>
+                        <p className="text-sm text-slate-400">{card.customer.phone || card.customer.email}</p>
                       </div>
-                    ))}
-                  </div>
-
-                  {card.isCompleted && card.reward && (
-                    <div className={`rounded-lg p-3 text-sm ${
-                      card.reward.isRedeemed ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
-                    }`}>
-                      {card.reward.isRedeemed ? (
-                        <span className="flex items-center gap-1.5">
-                          <Check size={14} /> Recompensa canjeada
-                        </span>
-                      ) : (
-                        <div className="flex justify-between items-center">
-                          <span className="flex items-center gap-1.5">
-                            <Gift size={14} /> Recompensa lista: {program.rewardTitle}
-                          </span>
-                          <button
-                            onClick={() => handleRedeem(card.reward!.id)}
-                            className="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-medium hover:bg-amber-700"
-                          >
-                            Validar canje
-                          </button>
-                        </div>
-                      )}
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-slate-900">{card.stampsCount}/{program.stampsRequired}</p>
+                        <p className="text-xs text-slate-400">sellos</p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))}
+
+                    <div className="flex gap-1.5 flex-wrap mb-3">
+                      {[...Array(program.stampsRequired)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
+                            i < card.stampsCount
+                              ? "bg-indigo-500 text-white"
+                              : "bg-slate-100 text-slate-400 border border-slate-200"
+                          }`}
+                        >
+                          {i < card.stampsCount ? "✓" : i + 1}
+                        </div>
+                      ))}
+                    </div>
+
+                    {card.isCompleted && card.reward && (
+                      <div className={`rounded-lg p-3 text-sm mb-2 ${
+                        card.reward.isRedeemed ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
+                      }`}>
+                        {card.reward.isRedeemed ? (
+                          <span className="flex items-center gap-1.5">
+                            <Check size={14} /> Recompensa canjeada
+                          </span>
+                        ) : (
+                          <div className="flex justify-between items-center">
+                            <span className="flex items-center gap-1.5">
+                              <Gift size={14} /> Recompensa lista: {program.rewardTitle}
+                            </span>
+                            <button
+                              onClick={() => handleRedeem(card.reward!.id)}
+                              className="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-medium hover:bg-amber-700"
+                            >
+                              Validar canje
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Historial de visitas */}
+                    {card.visits.length > 0 && (
+                      <div>
+                        <button
+                          onClick={() => setExpandedCard(isExpanded ? null : card.id)}
+                          className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600"
+                        >
+                          <Clock size={12} />
+                          {isExpanded ? "Ocultar historial" : `Ver historial de visitas (${card.visits.length})`}
+                          {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                        </button>
+
+                        {isExpanded && (
+                          <div className="mt-2 space-y-1 max-h-48 overflow-y-auto">
+                            {card.visits.map((visit, idx) => (
+                              <div
+                                key={visit.id}
+                                className="flex items-center justify-between text-xs text-slate-500 bg-slate-50 rounded px-3 py-1.5"
+                              >
+                                <span>Sello #{card.visits.length - idx}</span>
+                                <span>{formatDateTime(visit.createdAt)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
