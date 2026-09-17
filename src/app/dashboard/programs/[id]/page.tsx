@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift } from "lucide-react";
 
 interface CustomerCard {
   id: string;
@@ -43,7 +44,6 @@ export default function ProgramDetailPage({
       .then((r) => r.json())
       .then((data) => {
         setProgram(data.program);
-        // Generar QR en el cliente
         const scanUrl = `${window.location.origin}/s/${data.program.qrCode}`;
         import("qrcode").then((QRCode) => {
           QRCode.toDataURL(scanUrl, {
@@ -60,7 +60,6 @@ export default function ProgramDetailPage({
     if (!confirm("¿Confirmar canje de recompensa?")) return;
     const res = await fetch(`/api/rewards/${rewardId}/redeem`, { method: "POST" });
     if (res.ok) {
-      // Reload data
       const r = await fetch(`/api/programs/${id}`);
       const data = await r.json();
       setProgram(data.program);
@@ -76,14 +75,11 @@ export default function ProgramDetailPage({
 
   async function handleDelete() {
     if (!program) return;
-
     const clientCount = program.customerCards.length;
     const message = clientCount > 0
-      ? `⚠️ Este programa tiene ${clientCount} cliente${clientCount !== 1 ? "s" : ""}. Al eliminarlo se borrarán todos sus sellos y premios.\n\n¿Estás seguro de que quieres eliminar "${program.name}"?`
+      ? `Este programa tiene ${clientCount} cliente${clientCount !== 1 ? "s" : ""}. Al eliminarlo se borrarán todos sus sellos y premios.\n\n¿Estás seguro de que quieres eliminar "${program.name}"?`
       : `¿Estás seguro de que quieres eliminar "${program.name}"?`;
-
     if (!confirm(message)) return;
-
     setDeleting(true);
     try {
       const res = await fetch(`/api/programs/${id}`, { method: "DELETE" });
@@ -103,19 +99,14 @@ export default function ProgramDetailPage({
   async function handleToggleActive() {
     if (!program) return;
     const newState = !program.isActive;
-    const action = newState ? "activar" : "pausar";
     if (!confirm(`¿${newState ? "Activar" : "Pausar"} el programa "${program.name}"?`)) return;
-
     const res = await fetch(`/api/programs/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: newState }),
     });
-
     if (res.ok) {
       setProgram((prev) => prev ? { ...prev, isActive: newState } : prev);
-    } else {
-      alert(`Error al ${action} el programa`);
     }
   }
 
@@ -127,13 +118,13 @@ export default function ProgramDetailPage({
     <div>
       <Link
         href="/dashboard/programs"
-        className="text-sm text-slate-400 hover:text-slate-600 mb-4 inline-block"
+        className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-600 mb-4"
       >
-        ← Volver a programas
+        <ArrowLeft size={14} />
+        Volver a programas
       </Link>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Info + QR */}
         <div className="lg:w-80 shrink-0 space-y-4">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h1 className="text-xl font-bold text-slate-900 mb-1">{program.name}</h1>
@@ -159,80 +150,67 @@ export default function ProgramDetailPage({
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Estado</span>
-                <span
-                  className={`font-semibold ${
-                    program.isActive ? "text-green-600" : "text-slate-400"
-                  }`}
-                >
+                <span className={`font-semibold ${program.isActive ? "text-green-600" : "text-slate-400"}`}>
                   {program.isActive ? "Activo" : "Inactivo"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Clientes</span>
-                <span className="font-semibold">
-                  {program.customerCards.length}
-                </span>
+                <span className="font-semibold">{program.customerCards.length}</span>
               </div>
             </div>
           </div>
 
-          {/* QR Code */}
           <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
             <h3 className="font-semibold text-slate-900 mb-3">Código QR</h3>
             {qrDataUrl && (
-              <img
-                src={qrDataUrl}
-                alt="QR Code"
-                className="mx-auto mb-3 rounded-lg"
-                width={200}
-                height={200}
-              />
+              <img src={qrDataUrl} alt="QR Code" className="mx-auto mb-3 rounded-lg" width={200} height={200} />
             )}
-            <p className="text-xs text-slate-400 mb-3">
-              Imprime este QR y ponlo en tu local
-            </p>
+            <p className="text-xs text-slate-400 mb-3">Imprime este QR y ponlo en tu local</p>
             <div className="space-y-2">
               <button
                 onClick={copyScanUrl}
-                className="w-full py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50"
+                className="flex items-center justify-center gap-1.5 w-full py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50"
               >
-                {copied ? "✓ Copiado!" : "📋 Copiar link"}
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? "Copiado" : "Copiar link"}
               </button>
               {qrDataUrl && (
                 <a
                   href={qrDataUrl}
                   download={`qr-${program.qrCode}.png`}
-                  className="block w-full py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-center"
+                  className="flex items-center justify-center gap-1.5 w-full py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                 >
-                  ⬇️ Descargar QR
+                  <Download size={14} />
+                  Descargar QR
                 </a>
               )}
             </div>
           </div>
 
-          {/* Acciones */}
           <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
             <button
               onClick={handleToggleActive}
-              className={`w-full py-2 text-sm font-medium rounded-lg ${
+              className={`flex items-center justify-center gap-1.5 w-full py-2 text-sm font-medium rounded-lg ${
                 program.isActive
                   ? "border border-amber-300 text-amber-600 hover:bg-amber-50"
                   : "border border-green-300 text-green-600 hover:bg-green-50"
               }`}
             >
-              {program.isActive ? "⏸️ Pausar programa" : "▶️ Activar programa"}
+              {program.isActive ? <Pause size={14} /> : <Play size={14} />}
+              {program.isActive ? "Pausar programa" : "Activar programa"}
             </button>
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="w-full py-2 text-sm font-medium border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 w-full py-2 text-sm font-medium border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50"
             >
-              {deleting ? "Eliminando..." : "🗑️ Eliminar programa"}
+              <Trash2 size={14} />
+              {deleting ? "Eliminando..." : "Eliminar programa"}
             </button>
           </div>
         </div>
 
-        {/* Customers */}
         <div className="flex-1">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
             Clientes ({program.customerCards.length})
@@ -240,35 +218,23 @@ export default function ProgramDetailPage({
 
           {program.customerCards.length === 0 ? (
             <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
-              <p className="text-slate-400">
-                Aún no hay clientes. ¡Comparte tu QR para empezar!
-              </p>
+              <p className="text-slate-400">Aún no hay clientes. ¡Comparte tu QR para empezar!</p>
             </div>
           ) : (
             <div className="space-y-3">
               {program.customerCards.map((card) => (
-                <div
-                  key={card.id}
-                  className="bg-white rounded-xl border border-slate-200 p-4"
-                >
+                <div key={card.id} className="bg-white rounded-xl border border-slate-200 p-4">
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <p className="font-medium text-slate-900">
-                        {card.customer.name || "Cliente"}
-                      </p>
-                      <p className="text-sm text-slate-400">
-                        {card.customer.phone || card.customer.email}
-                      </p>
+                      <p className="font-medium text-slate-900">{card.customer.name || "Cliente"}</p>
+                      <p className="text-sm text-slate-400">{card.customer.phone || card.customer.email}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-slate-900">
-                        {card.stampsCount}/{program.stampsRequired}
-                      </p>
+                      <p className="text-lg font-bold text-slate-900">{card.stampsCount}/{program.stampsRequired}</p>
                       <p className="text-xs text-slate-400">sellos</p>
                     </div>
                   </div>
 
-                  {/* Stamps progress */}
                   <div className="flex gap-1.5 flex-wrap mb-3">
                     {[...Array(program.stampsRequired)].map((_, i) => (
                       <div
@@ -284,20 +250,19 @@ export default function ProgramDetailPage({
                     ))}
                   </div>
 
-                  {/* Reward status */}
                   {card.isCompleted && card.reward && (
-                    <div
-                      className={`rounded-lg p-3 text-sm ${
-                        card.reward.isRedeemed
-                          ? "bg-green-50 text-green-700"
-                          : "bg-amber-50 text-amber-700"
-                      }`}
-                    >
+                    <div className={`rounded-lg p-3 text-sm ${
+                      card.reward.isRedeemed ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
+                    }`}>
                       {card.reward.isRedeemed ? (
-                        <span>✅ Recompensa canjeada</span>
+                        <span className="flex items-center gap-1.5">
+                          <Check size={14} /> Recompensa canjeada
+                        </span>
                       ) : (
                         <div className="flex justify-between items-center">
-                          <span>🎁 Recompensa lista: {program.rewardTitle}</span>
+                          <span className="flex items-center gap-1.5">
+                            <Gift size={14} /> Recompensa lista: {program.rewardTitle}
+                          </span>
                           <button
                             onClick={() => handleRedeem(card.reward!.id)}
                             className="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-medium hover:bg-amber-700"

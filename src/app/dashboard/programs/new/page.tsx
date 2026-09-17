@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Coffee, Scissors, UtensilsCrossed, Dumbbell, Clock, Gift, Eye } from "lucide-react";
 
 const cooldownOptions = [
   { value: 0, label: "Sin cooldown (testing)" },
@@ -61,7 +62,8 @@ export default function NewProgramPage() {
 
   const templates = [
     {
-      label: "☕ Cafetería",
+      label: "Cafetería",
+      icon: <Coffee size={18} className="text-amber-600" />,
       name: "Café de fidelidad",
       stamps: 8,
       cooldown: 60,
@@ -69,7 +71,8 @@ export default function NewProgramPage() {
       desc: "Acumula 8 cafés y el siguiente es gratis",
     },
     {
-      label: "💇 Barbería/Peluquería",
+      label: "Barbería / Peluquería",
+      icon: <Scissors size={18} className="text-slate-600" />,
       name: "Cortes frecuentes",
       stamps: 5,
       cooldown: 1440,
@@ -77,7 +80,8 @@ export default function NewProgramPage() {
       desc: "Cada 5 cortes, el siguiente va por la casa",
     },
     {
-      label: "🍕 Restaurante",
+      label: "Restaurante",
+      icon: <UtensilsCrossed size={18} className="text-red-600" />,
       name: "Cliente frecuente",
       stamps: 10,
       cooldown: 240,
@@ -85,7 +89,8 @@ export default function NewProgramPage() {
       desc: "10 visitas y disfruta un plato por cuenta nuestra",
     },
     {
-      label: "💪 Gym/Estudio",
+      label: "Gym / Estudio",
+      icon: <Dumbbell size={18} className="text-indigo-600" />,
       name: "Entrenamiento fiel",
       stamps: 12,
       cooldown: 720,
@@ -112,7 +117,6 @@ export default function NewProgramPage() {
         Configura tu tarjeta de sellos. O usa una plantilla para empezar rápido:
       </p>
 
-      {/* Templates */}
       <div className="grid grid-cols-2 gap-3 mb-8">
         {templates.map((t) => (
           <button
@@ -120,8 +124,11 @@ export default function NewProgramPage() {
             onClick={() => applyTemplate(t)}
             className="text-left bg-white border border-slate-200 rounded-lg p-4 hover:border-indigo-300 transition"
           >
-            <span className="text-sm font-medium">{t.label}</span>
-            <p className="text-xs text-slate-400 mt-1">
+            <div className="flex items-center gap-2 mb-1">
+              {t.icon}
+              <span className="text-sm font-medium">{t.label}</span>
+            </div>
+            <p className="text-xs text-slate-400">
               {t.stamps} sellos → {t.reward}
             </p>
           </button>
@@ -180,8 +187,9 @@ export default function NewProgramPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            ⏱️ Tiempo entre sellos (cooldown)
+          <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1">
+            <Clock size={15} />
+            Tiempo entre sellos (cooldown)
           </label>
           <select
             value={form.cooldownMinutes}
@@ -196,13 +204,13 @@ export default function NewProgramPage() {
           </select>
           <p className="text-xs text-slate-400 mt-1">
             Tiempo mínimo que debe pasar entre cada sello del mismo cliente.
-            Evita que alguien escanee varias veces seguidas.
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            🎁 Recompensa
+          <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1">
+            <Gift size={15} />
+            Recompensa
           </label>
           <input
             type="text"
@@ -228,9 +236,10 @@ export default function NewProgramPage() {
 
         {/* Preview */}
         <div className="bg-slate-50 rounded-lg p-4">
-          <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">
-            Vista previa
-          </p>
+          <div className="flex items-center gap-1.5 mb-2">
+            <Eye size={14} className="text-slate-400" />
+            <p className="text-xs text-slate-400 uppercase tracking-wide">Vista previa</p>
+          </div>
           <div className="flex items-center gap-2 flex-wrap">
             {[...Array(form.stampsRequired || 5)].map((_, i) => (
               <div
@@ -248,8 +257,9 @@ export default function NewProgramPage() {
               → {form.rewardTitle || "Premio"}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-2">
-            ⏱️ Cooldown:{" "}
+          <p className="text-xs text-slate-400 mt-2 flex items-center gap-1">
+            <Clock size={12} />
+            Cooldown:{" "}
             {cooldownOptions.find((o) => o.value === form.cooldownMinutes)?.label ||
               `${form.cooldownMinutes} min`}
           </p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 
 interface Program {
   id: string;
@@ -34,9 +35,10 @@ export default function ProgramsPage() {
         <h1 className="text-2xl font-bold text-slate-900">Mis Programas</h1>
         <Link
           href="/dashboard/programs/new"
-          className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700"
         >
-          + Nuevo programa
+          <Plus size={16} />
+          Nuevo programa
         </Link>
       </div>
 
@@ -47,7 +49,7 @@ export default function ProgramsPage() {
             href="/dashboard/programs/new"
             className="text-indigo-600 font-medium hover:underline"
           >
-            Crear tu primer programa →
+            Crear tu primer programa
           </Link>
         </div>
       ) : (

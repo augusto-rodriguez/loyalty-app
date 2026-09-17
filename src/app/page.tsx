@@ -1,12 +1,15 @@
 import Link from "next/link";
+import { Target, Smartphone, Zap, Gift } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Nav */}
       <nav className="border-b border-slate-200 bg-white">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-indigo-600">🎯 Fidelio</h1>
+          <h1 className="text-2xl font-bold text-indigo-600 flex items-center gap-2">
+            <Target size={28} />
+            Fidelio
+          </h1>
           <div className="flex gap-3">
             <Link
               href="/login"
@@ -24,7 +27,6 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero */}
       <main className="flex-1 flex items-center">
         <div className="max-w-6xl mx-auto px-4 py-20 text-center">
           <h2 className="text-5xl font-bold text-slate-900 mb-6">
@@ -40,27 +42,32 @@ export default function Home() {
             href="/register"
             className="inline-block px-8 py-4 text-lg font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200"
           >
-            Empezar gratis →
+            Empezar gratis
           </Link>
 
-          {/* Features */}
           <div className="grid md:grid-cols-3 gap-8 mt-20 text-left">
             <div className="bg-white rounded-xl p-6 border border-slate-200">
-              <div className="text-3xl mb-3">📱</div>
+              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4">
+                <Smartphone size={22} className="text-indigo-600" />
+              </div>
               <h3 className="font-semibold text-lg mb-2">Sin app para el cliente</h3>
               <p className="text-slate-500">
                 Tu cliente escanea el QR con su cámara y listo. No necesita descargar nada.
               </p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-slate-200">
-              <div className="text-3xl mb-3">⚡</div>
+              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4">
+                <Zap size={22} className="text-indigo-600" />
+              </div>
               <h3 className="font-semibold text-lg mb-2">Listo en 5 minutos</h3>
               <p className="text-slate-500">
                 Crea tu cuenta, configura tu programa y genera tu QR. Así de simple.
               </p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-slate-200">
-              <div className="text-3xl mb-3">🎁</div>
+              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4">
+                <Gift size={22} className="text-indigo-600" />
+              </div>
               <h3 className="font-semibold text-lg mb-2">Premios automáticos</h3>
               <p className="text-slate-500">
                 Cuando tu cliente completa los sellos, desbloquea su premio automáticamente.
@@ -70,7 +77,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-slate-200 bg-white">
         <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-400">

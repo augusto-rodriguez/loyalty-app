@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { Target } from "lucide-react";
 
 export default function TerminosPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <nav className="border-b border-slate-200 bg-white">
         <div className="max-w-3xl mx-auto px-4 py-4">
-          <Link href="/" className="text-xl font-bold text-indigo-600">
-            🎯 Fidelio
+          <Link href="/" className="text-xl font-bold text-indigo-600 flex items-center gap-2">
+            <Target size={24} />
+            Fidelio
           </Link>
         </div>
       </nav>

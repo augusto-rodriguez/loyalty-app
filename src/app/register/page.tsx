@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Target } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -46,8 +47,9 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-indigo-600">
-            🎯 Fidelio
+          <Link href="/" className="inline-flex items-center gap-2 text-3xl font-bold text-indigo-600">
+            <Target size={32} />
+            Fidelio
           </Link>
           <p className="text-slate-500 mt-2">Registra tu negocio en 2 minutos</p>
         </div>
