@@ -19,14 +19,22 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [business, setBusiness] = useState<Business | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => {
+    Promise.all([
+      fetch("/api/auth/me").then((r) => {
         if (!r.ok) throw new Error();
         return r.json();
+      }),
+      fetch("/api/auth/is-admin")
+        .then((r) => r.json())
+        .catch(() => ({ isAdmin: false })),
+    ])
+      .then(([meData, adminData]) => {
+        setBusiness(meData.business);
+        setIsAdmin(adminData.isAdmin || false);
       })
-      .then((data) => setBusiness(data.business))
       .catch(() => router.push("/login"))
       .finally(() => setLoading(false));
   }, [router]);
@@ -61,6 +69,14 @@ export default function DashboardLayout({
             <span className="text-sm text-slate-500 hidden sm:inline">
               {business?.name}
             </span>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="text-xs bg-red-50 text-red-600 px-3 py-1 rounded-full font-medium hover:bg-red-100 transition"
+              >
+                ⚙️ Admin
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="text-sm text-slate-400 hover:text-red-500"
@@ -93,6 +109,14 @@ export default function DashboardLayout({
                 </Link>
               );
             })}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="block px-4 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition"
+              >
+                ⚙️ Administración
+              </Link>
+            )}
           </div>
         </nav>
 
@@ -120,6 +144,15 @@ export default function DashboardLayout({
               </Link>
             );
           })}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg text-red-500"
+            >
+              <span className="text-xl">⚙️</span>
+              <span className="text-xs font-medium">Admin</span>
+            </Link>
+          )}
         </div>
       </nav>
     </div>
