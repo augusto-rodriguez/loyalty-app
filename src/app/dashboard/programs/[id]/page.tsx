@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface CustomerCard {
@@ -30,10 +31,12 @@ export default function ProgramDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
   const [program, setProgram] = useState<Program | null>(null);
   const [loading, setLoading] = useState(true);
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetch(`/api/programs/${id}`)
@@ -69,6 +72,51 @@ export default function ProgramDetailPage({
     navigator.clipboard.writeText(`${window.location.origin}/s/${program.qrCode}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleDelete() {
+    if (!program) return;
+
+    const clientCount = program.customerCards.length;
+    const message = clientCount > 0
+      ? `⚠️ Este programa tiene ${clientCount} cliente${clientCount !== 1 ? "s" : ""}. Al eliminarlo se borrarán todos sus sellos y premios.\n\n¿Estás seguro de que quieres eliminar "${program.name}"?`
+      : `¿Estás seguro de que quieres eliminar "${program.name}"?`;
+
+    if (!confirm(message)) return;
+
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/programs/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        router.push("/dashboard/programs");
+      } else {
+        const data = await res.json();
+        alert(data.error || "Error al eliminar");
+      }
+    } catch {
+      alert("Error al eliminar el programa");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handleToggleActive() {
+    if (!program) return;
+    const newState = !program.isActive;
+    const action = newState ? "activar" : "pausar";
+    if (!confirm(`¿${newState ? "Activar" : "Pausar"} el programa "${program.name}"?`)) return;
+
+    const res = await fetch(`/api/programs/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive: newState }),
+    });
+
+    if (res.ok) {
+      setProgram((prev) => prev ? { ...prev, isActive: newState } : prev);
+    } else {
+      alert(`Error al ${action} el programa`);
+    }
   }
 
   if (loading || !program) {
@@ -160,6 +208,27 @@ export default function ProgramDetailPage({
                 </a>
               )}
             </div>
+          </div>
+
+          {/* Acciones */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
+            <button
+              onClick={handleToggleActive}
+              className={`w-full py-2 text-sm font-medium rounded-lg ${
+                program.isActive
+                  ? "border border-amber-300 text-amber-600 hover:bg-amber-50"
+                  : "border border-green-300 text-green-600 hover:bg-green-50"
+              }`}
+            >
+              {program.isActive ? "⏸️ Pausar programa" : "▶️ Activar programa"}
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="w-full py-2 text-sm font-medium border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50"
+            >
+              {deleting ? "Eliminando..." : "🗑️ Eliminar programa"}
+            </button>
           </div>
         </div>
 
