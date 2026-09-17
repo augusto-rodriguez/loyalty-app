@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { createProgramSchema, validate } from "@/lib/validations";
 import { rateLimit, getIP } from "@/lib/rate-limit";
-import { generatePinSeed } from "@/lib/pin";
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET(req: Request) {
@@ -56,7 +55,9 @@ export async function POST(req: Request) {
         stampsRequired,
         cooldownMinutes: cooldownMinutes ?? 60,
         requiresPin: requiresPin ?? false,
-        pinSeed: requiresPin ? generatePinSeed() : null,
+        // El PIN (currentPin/pinExpiresAt) se genera bajo demanda
+        // la primera vez que el dueño abre el panel del programa,
+        // no aquí en la creación.
         rewardTitle,
         rewardDescription: rewardDescription || null,
         qrCode,
