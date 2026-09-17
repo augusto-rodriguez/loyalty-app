@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  Store, UserPlus, CalendarDays,
+  Target, CheckCircle, Pause,
+  Users, MapPin, TrendingUp, BarChart3,
+  Gift, Clock,
+} from "lucide-react";
 
 interface Stats {
   totalBusinesses: number;
@@ -43,38 +49,34 @@ export default function AdminPage() {
     {
       title: "Negocios",
       cards: [
-        { label: "Total registrados", value: stats.totalBusinesses, icon: "🏪" },
-        { label: "Nuevos (7 días)", value: stats.newBusinessesLast7Days, icon: "🆕" },
-        { label: "Nuevos (30 días)", value: stats.newBusinessesLast30Days, icon: "📅" },
+        { label: "Total registrados", value: stats.totalBusinesses, icon: <Store size={18} className="text-indigo-400" /> },
+        { label: "Nuevos (7 días)", value: stats.newBusinessesLast7Days, icon: <UserPlus size={18} className="text-green-400" /> },
+        { label: "Nuevos (30 días)", value: stats.newBusinessesLast30Days, icon: <CalendarDays size={18} className="text-blue-400" /> },
       ],
     },
     {
       title: "Programas",
       cards: [
-        { label: "Total programas", value: stats.totalPrograms, icon: "🎯" },
-        { label: "Activos", value: stats.activePrograms, icon: "✅" },
-        {
-          label: "Inactivos",
-          value: stats.totalPrograms - stats.activePrograms,
-          icon: "⏸️",
-        },
+        { label: "Total programas", value: stats.totalPrograms, icon: <Target size={18} className="text-violet-400" /> },
+        { label: "Activos", value: stats.activePrograms, icon: <CheckCircle size={18} className="text-green-400" /> },
+        { label: "Inactivos", value: stats.totalPrograms - stats.activePrograms, icon: <Pause size={18} className="text-slate-400" /> },
       ],
     },
     {
       title: "Actividad",
       cards: [
-        { label: "Clientes totales", value: stats.totalCustomers, icon: "👥" },
-        { label: "Visitas totales", value: stats.totalVisits, icon: "📍" },
-        { label: "Visitas (7 días)", value: stats.visitsLast7Days, icon: "📈" },
-        { label: "Visitas (30 días)", value: stats.visitsLast30Days, icon: "📊" },
+        { label: "Clientes totales", value: stats.totalCustomers, icon: <Users size={18} className="text-indigo-400" /> },
+        { label: "Visitas totales", value: stats.totalVisits, icon: <MapPin size={18} className="text-blue-400" /> },
+        { label: "Visitas (7 días)", value: stats.visitsLast7Days, icon: <TrendingUp size={18} className="text-green-400" /> },
+        { label: "Visitas (30 días)", value: stats.visitsLast30Days, icon: <BarChart3 size={18} className="text-cyan-400" /> },
       ],
     },
     {
       title: "Premios",
       cards: [
-        { label: "Total generados", value: stats.totalRewards, icon: "🎁" },
-        { label: "Canjeados", value: stats.redeemedRewards, icon: "✅" },
-        { label: "Pendientes", value: stats.pendingRewards, icon: "⏳" },
+        { label: "Total generados", value: stats.totalRewards, icon: <Gift size={18} className="text-amber-400" /> },
+        { label: "Canjeados", value: stats.redeemedRewards, icon: <CheckCircle size={18} className="text-green-400" /> },
+        { label: "Pendientes", value: stats.pendingRewards, icon: <Clock size={18} className="text-orange-400" /> },
       ],
     },
   ];
@@ -98,7 +100,7 @@ export default function AdminPage() {
                   className="bg-slate-800 rounded-xl border border-slate-700 p-5"
                 >
                   <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-                    <span>{card.icon}</span>
+                    {card.icon}
                     <span>{card.label}</span>
                   </div>
                   <p className="text-3xl font-bold text-white">{card.value}</p>

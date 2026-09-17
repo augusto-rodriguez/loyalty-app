@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Users, MapPin, TrendingUp, Gift, CheckCircle, Target, Plus } from "lucide-react";
 
 interface Stats {
   totalCustomers: number;
@@ -45,12 +46,12 @@ export default function DashboardPage() {
 
   const cards = stats
     ? [
-        { label: "Clientes", value: stats.totalCustomers, icon: "👥" },
-        { label: "Visitas totales", value: stats.totalVisits, icon: "📍" },
-        { label: "Visitas (7 días)", value: stats.recentVisits, icon: "📈" },
-        { label: "Premios pendientes", value: stats.pendingRewards, icon: "🎁" },
-        { label: "Premios canjeados", value: stats.redeemedRewards, icon: "✅" },
-        { label: "Programas activos", value: stats.totalPrograms, icon: "🎯" },
+        { label: "Clientes", value: stats.totalCustomers, icon: <Users size={18} className="text-indigo-500" /> },
+        { label: "Visitas totales", value: stats.totalVisits, icon: <MapPin size={18} className="text-blue-500" /> },
+        { label: "Visitas (7 días)", value: stats.recentVisits, icon: <TrendingUp size={18} className="text-green-500" /> },
+        { label: "Premios pendientes", value: stats.pendingRewards, icon: <Gift size={18} className="text-amber-500" /> },
+        { label: "Premios canjeados", value: stats.redeemedRewards, icon: <CheckCircle size={18} className="text-emerald-500" /> },
+        { label: "Programas activos", value: stats.totalPrograms, icon: <Target size={18} className="text-violet-500" /> },
       ]
     : [];
 
@@ -60,9 +61,10 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold text-slate-900">Panel de control</h1>
         <Link
           href="/dashboard/programs/new"
-          className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700"
         >
-          + Nuevo programa
+          <Plus size={16} />
+          Nuevo programa
         </Link>
       </div>
 
@@ -92,7 +94,7 @@ export default function DashboardPage() {
               className="bg-white rounded-xl border border-slate-200 p-6"
             >
               <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
-                <span>{card.icon}</span>
+                {card.icon}
                 <span>{card.label}</span>
               </div>
               <p className="text-3xl font-bold text-slate-900">{card.value}</p>
@@ -111,9 +113,10 @@ export default function DashboardPage() {
           </p>
           <Link
             href="/dashboard/programs/new"
-            className="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700"
           >
-            Crear programa →
+            <Plus size={18} />
+            Crear programa
           </Link>
         </div>
       )}
