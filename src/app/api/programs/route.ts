@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { createProgramSchema, validate } from "@/lib/validations";
 import { rateLimit, getIP } from "@/lib/rate-limit";
+import { generatePinSeed } from "@/lib/pin";
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET(req: Request) {
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const { name, description, stampsRequired, cooldownMinutes, rewardTitle, rewardDescription } =
+    const { name, description, stampsRequired, cooldownMinutes, requiresPin, rewardTitle, rewardDescription } =
       validation.data;
 
     const qrCode = uuidv4().replace(/-/g, "").substring(0, 12).toUpperCase();
@@ -54,6 +55,8 @@ export async function POST(req: Request) {
         description: description || null,
         stampsRequired,
         cooldownMinutes: cooldownMinutes ?? 60,
+        requiresPin: requiresPin ?? false,
+        pinSeed: requiresPin ? generatePinSeed() : null,
         rewardTitle,
         rewardDescription: rewardDescription || null,
         qrCode,

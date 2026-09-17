@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============ NEGOCIO ============
 model Business {
   id        String   @id @default(uuid())
   name      String
@@ -22,7 +21,6 @@ model Business {
   loyaltyPrograms LoyaltyProgram[]
 }
 
-// ============ PROGRAMA DE FIDELIZACIÓN ============
 model LoyaltyProgram {
   id                String   @id @default(uuid())
   businessId        String
@@ -30,6 +28,8 @@ model LoyaltyProgram {
   description       String?
   stampsRequired    Int      @default(10)
   cooldownMinutes   Int      @default(60)
+  requiresPin       Boolean  @default(false)
+  pinSeed           String?
   rewardTitle       String
   rewardDescription String?
   isActive          Boolean  @default(true)
@@ -43,7 +43,6 @@ model LoyaltyProgram {
   @@index([businessId])
 }
 
-// ============ CLIENTE FINAL ============
 model Customer {
   id        String   @id @default(uuid())
   phone     String?  @unique
@@ -54,7 +53,6 @@ model Customer {
   cards CustomerCard[]
 }
 
-// ============ TARJETA DEL CLIENTE ============
 model CustomerCard {
   id               String    @id @default(uuid())
   customerId       String
@@ -75,7 +73,6 @@ model CustomerCard {
   @@index([customerId])
 }
 
-// ============ REGISTRO DE VISITAS ============
 model Visit {
   id             String   @id @default(uuid())
   customerCardId String
@@ -87,7 +84,6 @@ model Visit {
   @@index([createdAt])
 }
 
-// ============ RECOMPENSA CANJEADA ============
 model Reward {
   id             String    @id @default(uuid())
   customerCardId String    @unique

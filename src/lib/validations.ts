@@ -47,8 +47,9 @@ export const createProgramSchema = z.object({
     .number()
     .int()
     .min(0, "El cooldown no puede ser negativo")
-  .max(43200, "Máximo 1 mes")
+    .max(43200, "Máximo 1 mes")
     .default(60),
+  requiresPin: z.boolean().default(false),
   rewardTitle: z
     .string()
     .min(2, "La recompensa debe tener al menos 2 caracteres")
@@ -62,6 +63,7 @@ export const updateProgramSchema = z.object({
   description: z.string().max(500).trim().optional(),
   stampsRequired: z.number().int().min(2).max(50).optional(),
   cooldownMinutes: z.number().int().min(0).max(43200).optional(),
+  requiresPin: z.boolean().optional(),
   rewardTitle: z.string().min(2).max(200).trim().optional(),
   rewardDescription: z.string().max(500).trim().optional(),
   isActive: z.boolean().optional(),
@@ -90,13 +92,18 @@ export const scanSchema = z.object({
     .trim()
     .optional()
     .or(z.literal("")),
+  pin: z
+    .string()
+    .length(4, "El PIN debe tener 4 dígitos")
+    .regex(/^\d{4}$/, "El PIN debe ser numérico")
+    .optional()
+    .or(z.literal("")),
 }).refine(
   (data) => (data.phone && data.phone.length > 0) || (data.email && data.email.length > 0),
   { message: "Se necesita teléfono o email", path: ["phone"] }
 );
 
-// Helper para validar y devolver error formateado
-export function validate<T>(schema: z.ZodSchema<T>, data: unknown): 
+export function validate<T>(schema: z.ZodSchema<T>, data: unknown):
   { success: true; data: T } | { success: false; error: string } {
   const result = schema.safeParse(data);
   if (result.success) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
-import { Store, Gift, Star, PartyPopper, CheckCircle, AlertCircle } from "lucide-react";
+import { Store, Gift, Star, PartyPopper, CheckCircle, AlertCircle, ShieldCheck, Lock } from "lucide-react";
 
 interface ProgramInfo {
   id: string;
@@ -10,6 +10,7 @@ interface ProgramInfo {
   stampsRequired: number;
   rewardTitle: string;
   rewardDescription: string | null;
+  requiresPin: boolean;
   businessName: string;
   businessLogo: string | null;
 }
@@ -32,9 +33,8 @@ export default function ScanPage({
   const [card, setCard] = useState<CardStatus | null>(null);
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
-  const [step, setStep] = useState<"loading" | "identify" | "result" | "error">(
-    "loading"
-  );
+  const [pin, setPin] = useState("");
+  const [step, setStep] = useState<"loading" | "identify" | "result" | "error">("loading");
   const [message, setMessage] = useState("");
   const [newStamp, setNewStamp] = useState(false);
   const [error, setError] = useState("");
@@ -49,10 +49,14 @@ export default function ScanPage({
         setProgram(data.program);
         const savedPhone = localStorage.getItem(`fidelio-phone-${qrCode}`);
         const savedName = localStorage.getItem(`fidelio-name-${qrCode}`);
-        if (savedPhone) {
+        if (savedPhone && !data.program.requiresPin) {
           setPhone(savedPhone);
           if (savedName) setName(savedName);
           registerVisit(savedPhone, savedName || undefined);
+        } else if (savedPhone && data.program.requiresPin) {
+          setPhone(savedPhone);
+          if (savedName) setName(savedName);
+          setStep("identify");
         } else {
           setStep("identify");
         }
@@ -63,12 +67,16 @@ export default function ScanPage({
       });
   }, [qrCode]);
 
-  async function registerVisit(customerPhone: string, customerName?: string) {
+  async function registerVisit(customerPhone: string, customerName?: string, customerPin?: string) {
     try {
       const res = await fetch(`/api/scan/${qrCode}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: customerPhone, name: customerName }),
+        body: JSON.stringify({
+          phone: customerPhone,
+          name: customerName,
+          pin: customerPin,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -79,15 +87,26 @@ export default function ScanPage({
       localStorage.setItem(`fidelio-phone-${qrCode}`, customerPhone);
       if (customerName) localStorage.setItem(`fidelio-name-${qrCode}`, customerName);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al registrar visita");
-      setStep("error");
+      const msg = err instanceof Error ? err.message : "Error al registrar visita";
+      if (msg.includes("PIN")) {
+        setError(msg);
+        // No cambiar a step error, dejar en identify para reintentar
+      } else {
+        setError(msg);
+        setStep("error");
+      }
     }
   }
 
   function handleIdentify(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
     if (!phone.trim()) return;
-    registerVisit(phone.trim(), name.trim() || undefined);
+    if (program?.requiresPin && !pin.trim()) {
+      setError("Ingresa el PIN que te dará el personal del local");
+      return;
+    }
+    registerVisit(phone.trim(), name.trim() || undefined, pin.trim() || undefined);
   }
 
   if (step === "loading") {
@@ -98,7 +117,7 @@ export default function ScanPage({
     );
   }
 
-  if (step === "error") {
+  if (step === "error" && !program) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 to-white px-4">
         <div className="text-center">
@@ -126,8 +145,16 @@ export default function ScanPage({
             className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm"
           >
             <p className="text-center text-sm text-slate-500">
-              Ingresa tu número para registrar tu visita
+              Ingresa tus datos para registrar tu visita
             </p>
+
+            {error && (
+              <div className="bg-red-50 text-red-600 text-sm rounded-lg p-3 flex items-start gap-2">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                {error}
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Tu nombre (opcional)</label>
               <input
@@ -138,6 +165,7 @@ export default function ScanPage({
                 className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-lg"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Teléfono *</label>
               <input
@@ -149,12 +177,38 @@ export default function ScanPage({
                 required
               />
             </div>
+
+            {program?.requiresPin && (
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1">
+                  <Lock size={14} />
+                  Código PIN *
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="\d{4}"
+                  maxLength={4}
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  placeholder="Pide el código al personal"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-lg text-center tracking-[0.3em] font-mono"
+                  required
+                />
+                <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                  <ShieldCheck size={12} className="text-indigo-500" />
+                  El personal del local tiene el código del día
+                </p>
+              </div>
+            )}
+
             <button
               type="submit"
               className="w-full py-3.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 text-lg"
             >
               Registrar visita
             </button>
+
             <p className="text-center text-xs text-slate-400">
               Solo usamos tu número para identificar tu tarjeta
             </p>
@@ -173,11 +227,7 @@ export default function ScanPage({
               }`}
             >
               <div className="flex items-center justify-center gap-2">
-                {card.isCompleted ? (
-                  <PartyPopper size={20} />
-                ) : newStamp ? (
-                  <CheckCircle size={20} />
-                ) : null}
+                {card.isCompleted ? <PartyPopper size={20} /> : newStamp ? <CheckCircle size={20} /> : null}
                 <p className={`text-lg font-semibold ${!card.isCompleted && !newStamp ? "text-slate-700" : ""}`}>
                   {message}
                 </p>
@@ -200,17 +250,9 @@ export default function ScanPage({
                       i < card.stampsCount
                         ? "bg-indigo-500 text-white shadow-md shadow-indigo-200"
                         : "bg-slate-100 text-slate-300 border-2 border-dashed border-slate-200"
-                    } ${
-                      i === card.stampsCount - 1 && newStamp
-                        ? "ring-4 ring-indigo-200 animate-bounce"
-                        : ""
-                    }`}
+                    } ${i === card.stampsCount - 1 && newStamp ? "ring-4 ring-indigo-200 animate-bounce" : ""}`}
                   >
-                    {i < card.stampsCount ? (
-                      <Star size={18} fill="currentColor" />
-                    ) : (
-                      <span className="text-sm font-bold">{i + 1}</span>
-                    )}
+                    {i < card.stampsCount ? <Star size={18} fill="currentColor" /> : <span className="text-sm font-bold">{i + 1}</span>}
                   </div>
                 ))}
               </div>

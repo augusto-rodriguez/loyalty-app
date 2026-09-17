@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift } from "lucide-react";
+import { ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift, ShieldCheck, Eye, EyeOff } from "lucide-react";
 
 interface CustomerCard {
   id: string;
@@ -19,6 +19,7 @@ interface Program {
   description: string | null;
   stampsRequired: number;
   cooldownMinutes: number;
+  requiresPin: boolean;
   rewardTitle: string;
   rewardDescription: string | null;
   isActive: boolean;
@@ -38,6 +39,8 @@ export default function ProgramDetailPage({
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [dailyPin, setDailyPin] = useState<string | null>(null);
+  const [showPin, setShowPin] = useState(false);
 
   useEffect(() => {
     fetch(`/api/programs/${id}`)
@@ -55,6 +58,14 @@ export default function ProgramDetailPage({
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (program?.requiresPin) {
+      fetch(`/api/programs/${id}/pin`)
+        .then((r) => r.json())
+        .then((data) => { if (data.pin) setDailyPin(data.pin); });
+    }
+  }, [program, id]);
 
   async function handleRedeem(rewardId: string) {
     if (!confirm("¿Confirmar canje de recompensa?")) return;
@@ -155,6 +166,12 @@ export default function ProgramDetailPage({
                 </span>
               </div>
               <div className="flex justify-between">
+                <span className="text-slate-500">Verificación PIN</span>
+                <span className={`font-semibold ${program.requiresPin ? "text-indigo-600" : "text-slate-400"}`}>
+                  {program.requiresPin ? "Activada" : "Desactivada"}
+                </span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-slate-500">Clientes</span>
                 <span className="font-semibold">{program.customerCards.length}</span>
               </div>
@@ -187,6 +204,29 @@ export default function ProgramDetailPage({
               )}
             </div>
           </div>
+
+          {program.requiresPin && dailyPin && (
+            <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-5">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck size={18} className="text-indigo-600" />
+                  <h3 className="font-semibold text-indigo-900 text-sm">PIN del día</h3>
+                </div>
+                <button
+                  onClick={() => setShowPin(!showPin)}
+                  className="text-indigo-400 hover:text-indigo-600"
+                >
+                  {showPin ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <p className="text-3xl font-mono font-bold text-indigo-700 text-center tracking-[0.3em]">
+                {showPin ? dailyPin : "••••"}
+              </p>
+              <p className="text-xs text-indigo-400 text-center mt-2">
+                Comparte este código con tu personal. Cambia cada día automáticamente.
+              </p>
+            </div>
+          )}
 
           <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
             <button

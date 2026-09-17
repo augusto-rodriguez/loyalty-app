@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { scanSchema, validate } from "@/lib/validations";
 import { rateLimit, getIP } from "@/lib/rate-limit";
+import { verifyPin } from "@/lib/pin";
 
 export async function GET(
   _req: Request,
@@ -35,6 +36,7 @@ export async function GET(
       stampsRequired: program.stampsRequired,
       rewardTitle: program.rewardTitle,
       rewardDescription: program.rewardDescription,
+      requiresPin: program.requiresPin,
       businessName: program.business.name,
       businessLogo: program.business.logoUrl,
     },
@@ -62,7 +64,7 @@ export async function POST(
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const { phone, email, name } = validation.data;
+    const { phone, email, name, pin } = validation.data;
 
     // 1. Buscar programa
     const program = await prisma.loyaltyProgram.findUnique({
@@ -76,7 +78,23 @@ export async function POST(
       );
     }
 
-    // 2. Buscar o crear cliente
+    // 2. Verificar PIN si es requerido
+    if (program.requiresPin && program.pinSeed) {
+      if (!pin || pin.length === 0) {
+        return NextResponse.json(
+          { error: "Este programa requiere un PIN. Pídelo al personal del local." },
+          { status: 400 }
+        );
+      }
+      if (!verifyPin(program.pinSeed, pin)) {
+        return NextResponse.json(
+          { error: "PIN incorrecto. Verifica con el personal del local." },
+          { status: 403 }
+        );
+      }
+    }
+
+    // 3. Buscar o crear cliente
     const identifier = phone && phone.length > 0 ? { phone } : { email: email! };
     let customer = await prisma.customer.findUnique({ where: identifier });
 
@@ -90,7 +108,7 @@ export async function POST(
       });
     }
 
-    // 3. Buscar o crear tarjeta
+    // 4. Buscar o crear tarjeta
     let card = await prisma.customerCard.findUnique({
       where: {
         customerId_loyaltyProgramId: {
@@ -111,7 +129,7 @@ export async function POST(
       });
     }
 
-    // Si ya está completa, informar
+    // Si ya está completa
     if (card.isCompleted) {
       return NextResponse.json({
         card: {
@@ -127,7 +145,7 @@ export async function POST(
       });
     }
 
-    // 4. Cooldown: usar el valor del programa
+    // 5. Cooldown
     const cooldownMs = program.cooldownMinutes * 60 * 1000;
 
     const lastVisit = await prisma.visit.findFirst({
@@ -153,7 +171,7 @@ export async function POST(
       }
     }
 
-    // 5. Registrar visita y actualizar sellos
+    // 6. Registrar visita
     const newStamps = card.stampsCount + 1;
     const completed = newStamps >= program.stampsRequired;
 
@@ -185,8 +203,8 @@ export async function POST(
         rewardTitle: program.rewardTitle,
       },
       message: completed
-        ? `🎉 ¡Felicidades! Desbloqueaste: ${program.rewardTitle}`
-        : `✅ ¡Visita registrada! ${newStamps}/${program.stampsRequired} sellos`,
+        ? `¡Felicidades! Desbloqueaste: ${program.rewardTitle}`
+        : `¡Visita registrada! ${newStamps}/${program.stampsRequired} sellos`,
       newStamp: true,
     });
   } catch (error) {

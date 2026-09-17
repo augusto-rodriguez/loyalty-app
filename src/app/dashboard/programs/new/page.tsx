@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Coffee, Scissors, UtensilsCrossed, Dumbbell, Clock, Gift, Eye } from "lucide-react";
+import { Coffee, Scissors, UtensilsCrossed, Dumbbell, Clock, Gift, Eye, ShieldCheck, HelpCircle, X } from "lucide-react";
 
 const cooldownOptions = [
   { value: 0, label: "Sin cooldown (testing)" },
@@ -27,13 +27,15 @@ export default function NewProgramPage() {
     description: "",
     stampsRequired: 10,
     cooldownMinutes: 60,
+    requiresPin: false,
     rewardTitle: "",
     rewardDescription: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPinHelp, setShowPinHelp] = useState(false);
 
-  function update(field: string, value: string | number) {
+  function update(field: string, value: string | number | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -105,6 +107,7 @@ export default function NewProgramPage() {
       description: t.desc,
       stampsRequired: t.stamps,
       cooldownMinutes: t.cooldown,
+      requiresPin: false,
       rewardTitle: t.reward,
       rewardDescription: t.desc,
     });
@@ -207,6 +210,75 @@ export default function NewProgramPage() {
           </p>
         </div>
 
+        {/* PIN Toggle */}
+        <div className="bg-slate-50 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={18} className="text-indigo-600" />
+              <span className="text-sm font-medium text-slate-700">
+                Verificación por PIN
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowPinHelp(!showPinHelp)}
+                className="text-slate-400 hover:text-indigo-600 transition"
+              >
+                <HelpCircle size={16} />
+              </button>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.requiresPin}
+                onChange={(e) => update("requiresPin", e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-slate-300 peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600" />
+            </label>
+          </div>
+
+          {showPinHelp && (
+            <div className="mt-3 bg-white rounded-lg p-4 border border-slate-200 relative">
+              <button
+                type="button"
+                onClick={() => setShowPinHelp(false)}
+                className="absolute top-2 right-2 text-slate-400 hover:text-slate-600"
+              >
+                <X size={16} />
+              </button>
+              <p className="text-sm text-slate-600 font-medium mb-2">
+                ¿Qué es la verificación por PIN?
+              </p>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Cuando esta opción está activada, el cliente necesita ingresar un
+                código de 4 dígitos para registrar su visita. Este código lo tiene
+                el personal del local y <strong>cambia automáticamente cada día</strong>.
+              </p>
+              <p className="text-sm text-slate-500 leading-relaxed mt-2">
+                Esto evita que alguien registre sellos sin estar físicamente en tu
+                negocio (por ejemplo, compartiendo el QR por WhatsApp). El PIN del
+                día se muestra en el panel de tu programa.
+              </p>
+              <div className="flex gap-4 mt-3 text-xs text-slate-400">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck size={12} className="text-green-500" />
+                  Evita fraude
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock size={12} className="text-indigo-500" />
+                  Cambia cada día
+                </span>
+              </div>
+            </div>
+          )}
+
+          {form.requiresPin && !showPinHelp && (
+            <p className="text-xs text-indigo-600 mt-2">
+              El PIN del día se mostrará en el panel de este programa una vez creado.
+            </p>
+          )}
+        </div>
+
         <div>
           <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1">
             <Gift size={15} />
@@ -257,12 +329,18 @@ export default function NewProgramPage() {
               → {form.rewardTitle || "Premio"}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-2 flex items-center gap-1">
-            <Clock size={12} />
-            Cooldown:{" "}
-            {cooldownOptions.find((o) => o.value === form.cooldownMinutes)?.label ||
-              `${form.cooldownMinutes} min`}
-          </p>
+          <div className="flex gap-4 mt-2 text-xs text-slate-400">
+            <span className="flex items-center gap-1">
+              <Clock size={12} />
+              {cooldownOptions.find((o) => o.value === form.cooldownMinutes)?.label || `${form.cooldownMinutes} min`}
+            </span>
+            {form.requiresPin && (
+              <span className="flex items-center gap-1 text-indigo-500">
+                <ShieldCheck size={12} />
+                PIN activado
+              </span>
+            )}
+          </div>
         </div>
 
         <button
