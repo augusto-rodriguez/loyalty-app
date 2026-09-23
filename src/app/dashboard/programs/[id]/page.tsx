@@ -79,7 +79,7 @@ export default function ProgramDetailPage({
           QRCode.toDataURL(scanUrl, {
             width: 300,
             margin: 2,
-            color: { dark: "#4f46e5", light: "#ffffff" },
+            color: { dark: "#541F32", light: "#FFFDFB" },
           }).then(setQrDataUrl);
         });
       })
@@ -208,14 +208,15 @@ export default function ProgramDetailPage({
   }
 
   if (loading || !program) {
-    return <div className="animate-pulse text-slate-400">Cargando...</div>;
+    return <div className="animate-pulse" style={{ color: "var(--ink-muted)" }}>Cargando...</div>;
   }
 
   return (
     <div>
       <Link
         href="/dashboard/programs"
-        className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-600 mb-4"
+        className="flex items-center gap-1 text-sm mb-4"
+        style={{ color: "var(--ink-muted)" }}
       >
         <ArrowLeft size={14} />
         Volver a programas
@@ -223,49 +224,45 @@ export default function ProgramDetailPage({
 
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="lg:w-80 shrink-0 space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h1 className="text-xl font-bold text-slate-900 mb-1">{program.name}</h1>
+          <div className="rounded-xl p-6" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
+            <h1 className="font-display text-xl italic mb-1" style={{ color: "var(--wine)" }}>{program.name}</h1>
             {program.description && (
-              <p className="text-sm text-slate-500 mb-4">{program.description}</p>
+              <p className="text-sm mb-4" style={{ color: "var(--ink-muted)" }}>{program.description}</p>
             )}
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-500">Sellos necesarios</span>
-                <span className="font-semibold">{program.stampsRequired}</span>
+                <span style={{ color: "var(--ink-muted)" }}>Sellos necesarios</span>
+                <span className="font-semibold" style={{ color: "var(--ink)" }}>{program.stampsRequired}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Recompensa</span>
-                <span className="font-semibold">{program.rewardTitle}</span>
+                <span style={{ color: "var(--ink-muted)" }}>Recompensa</span>
+                <span className="font-semibold" style={{ color: "var(--ink)" }}>{program.rewardTitle}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Cooldown</span>
-                <span className="font-semibold">
-                  {program.cooldownMinutes >= 60
-                    ? `${program.cooldownMinutes / 60}h`
-                    : `${program.cooldownMinutes} min`}
+                <span style={{ color: "var(--ink-muted)" }}>Cooldown</span>
+                <span className="font-semibold" style={{ color: "var(--ink)" }}>
+                  {program.cooldownMinutes >= 60 ? `${program.cooldownMinutes / 60}h` : `${program.cooldownMinutes} min`}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Estado</span>
-                <span className={`font-semibold ${program.isActive ? "text-green-600" : "text-slate-400"}`}>
+                <span style={{ color: "var(--ink-muted)" }}>Estado</span>
+                <span className="font-semibold" style={{ color: program.isActive ? "#2F6B3F" : "var(--ink-muted)" }}>
                   {program.isActive ? "Activo" : "Inactivo"}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Clientes</span>
-                <span className="font-semibold">{program.customerCards.length}</span>
+                <span style={{ color: "var(--ink-muted)" }}>Clientes</span>
+                <span className="font-semibold" style={{ color: "var(--ink)" }}>{program.customerCards.length}</span>
               </div>
             </div>
           </div>
 
           {/* Toggle de PIN */}
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="rounded-xl p-5" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={18} className="text-indigo-600" />
-                <span className="text-sm font-medium text-slate-700">
-                  Verificación por PIN
-                </span>
+                <ShieldCheck size={18} style={{ color: "var(--wine)" }} />
+                <span className="text-sm font-medium" style={{ color: "var(--ink)" }}>Verificación por PIN</span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -275,10 +272,13 @@ export default function ProgramDetailPage({
                   disabled={togglingPin}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-300 peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 peer-disabled:opacity-50" />
+                <div
+                  className="w-11 h-6 rounded-full peer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-disabled:opacity-50"
+                  style={{ background: program.requiresPin ? "var(--wine)" : "var(--line)" }}
+                />
               </label>
             </div>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="text-xs mt-2" style={{ color: "var(--ink-muted)" }}>
               {program.requiresPin
                 ? "Tus clientes deben ingresar el PIN del personal para sumar sellos."
                 : "Actívalo para reforzar la seguridad y evitar que compartan el QR."}
@@ -287,29 +287,27 @@ export default function ProgramDetailPage({
 
           {/* PIN actual */}
           {program.requiresPin && dailyPin && (
-            <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-5">
+            <div className="rounded-xl p-5" style={{ background: "#F1E4DC" }}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck size={18} className="text-indigo-600" />
-                  <h3 className="font-semibold text-indigo-900 text-sm">PIN actual</h3>
+                  <ShieldCheck size={18} style={{ color: "var(--wine)" }} />
+                  <h3 className="font-semibold text-sm" style={{ color: "var(--wine)" }}>PIN actual</h3>
                 </div>
-                <button
-                  onClick={() => setShowPin(!showPin)}
-                  className="text-indigo-400 hover:text-indigo-600"
-                >
+                <button onClick={() => setShowPin(!showPin)} style={{ color: "var(--rose)" }}>
                   {showPin ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              <p className="text-3xl font-mono font-bold text-indigo-700 text-center tracking-[0.3em]">
+              <p className="text-3xl font-mono font-bold text-center tracking-[0.3em]" style={{ color: "var(--wine)" }}>
                 {showPin ? dailyPin : "••••"}
               </p>
-              <p className="text-xs text-indigo-400 text-center mt-2">
+              <p className="text-xs text-center mt-2" style={{ color: "var(--ink-muted)" }}>
                 Expira en {minutesLeft} minuto{minutesLeft !== 1 ? "s" : ""}
               </p>
               <button
                 onClick={handleRegeneratePin}
                 disabled={regenerating}
-                className="flex items-center justify-center gap-1.5 w-full mt-3 py-2 text-xs font-medium bg-white border border-indigo-300 text-indigo-600 rounded-lg hover:bg-indigo-100 disabled:opacity-50"
+                className="flex items-center justify-center gap-1.5 w-full mt-3 py-2 text-xs font-medium rounded-lg disabled:opacity-50"
+                style={{ background: "var(--paper)", border: "1px solid var(--rose)", color: "var(--wine)" }}
               >
                 <RefreshCw size={13} className={regenerating ? "animate-spin" : ""} />
                 {regenerating ? "Actualizando..." : "Actualizar ahora"}
@@ -317,16 +315,17 @@ export default function ProgramDetailPage({
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
-            <h3 className="font-semibold text-slate-900 mb-3">Código QR</h3>
+          <div className="rounded-xl p-6 text-center" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
+            <h3 className="font-semibold mb-3" style={{ color: "var(--ink)" }}>Código QR</h3>
             {qrDataUrl && (
               <img src={qrDataUrl} alt="QR Code" className="mx-auto mb-3 rounded-lg" width={200} height={200} />
             )}
-            <p className="text-xs text-slate-400 mb-3">Imprime este QR y ponlo en tu local</p>
+            <p className="text-xs mb-3" style={{ color: "var(--ink-muted)" }}>Imprime este QR y ponlo en tu local</p>
             <div className="space-y-2">
               <button
                 onClick={copyScanUrl}
-                className="flex items-center justify-center gap-1.5 w-full py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50"
+                className="flex items-center justify-center gap-1.5 w-full py-2 text-sm rounded-lg"
+                style={{ border: "1px solid var(--line)", color: "var(--ink)" }}
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
                 {copied ? "Copiado" : "Copiar link"}
@@ -335,7 +334,8 @@ export default function ProgramDetailPage({
                 <a
                   href={qrDataUrl}
                   download={`qr-${program.qrCode}.png`}
-                  className="flex items-center justify-center gap-1.5 w-full py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                  className="flex items-center justify-center gap-1.5 w-full py-2 text-sm rounded-lg text-white"
+                  style={{ background: "var(--wine)" }}
                 >
                   <Download size={14} />
                   Descargar QR
@@ -344,14 +344,15 @@ export default function ProgramDetailPage({
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
+          <div className="rounded-xl p-4 space-y-2" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
             <button
               onClick={handleToggleActive}
-              className={`flex items-center justify-center gap-1.5 w-full py-2 text-sm font-medium rounded-lg ${
+              className="flex items-center justify-center gap-1.5 w-full py-2 text-sm font-medium rounded-lg"
+              style={
                 program.isActive
-                  ? "border border-amber-300 text-amber-600 hover:bg-amber-50"
-                  : "border border-green-300 text-green-600 hover:bg-green-50"
-              }`}
+                  ? { border: "1px solid var(--sand-dark)", color: "#8A5A1A" }
+                  : { border: "1px solid #8FBF9A", color: "#2F6B3F" }
+              }
             >
               {program.isActive ? <Pause size={14} /> : <Play size={14} />}
               {program.isActive ? "Pausar programa" : "Activar programa"}
@@ -359,7 +360,8 @@ export default function ProgramDetailPage({
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="flex items-center justify-center gap-1.5 w-full py-2 text-sm font-medium border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 w-full py-2 text-sm font-medium rounded-lg disabled:opacity-50"
+              style={{ border: "1px solid var(--rose)", color: "var(--wine)" }}
             >
               <Trash2 size={14} />
               {deleting ? "Eliminando..." : "Eliminar programa"}
@@ -368,33 +370,34 @@ export default function ProgramDetailPage({
         </div>
 
         <div className="flex-1">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">
+          <h2 className="font-display text-lg italic mb-4" style={{ color: "var(--wine)" }}>
             Clientes ({program.customerCards.length})
           </h2>
 
           {program.customerCards.length === 0 ? (
-            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
-              <p className="text-slate-400">Aún no hay clientes. ¡Comparte tu QR para empezar!</p>
+            <div className="rounded-xl p-8 text-center" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
+              <p style={{ color: "var(--ink-muted)" }}>Aún no hay clientes. Comparte tu QR para empezar.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {program.customerCards.map((card) => {
                 const isExpanded = expandedCard === card.id;
                 return (
-                  <div key={card.id} className="bg-white rounded-xl border border-slate-200 p-4">
+                  <div key={card.id} className="rounded-xl p-4" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <p className="font-medium text-slate-900">{card.customer.name || "Cliente"}</p>
-                        <p className="text-sm text-slate-400">{card.customer.phone || card.customer.email}</p>
+                        <p className="font-medium" style={{ color: "var(--ink)" }}>{card.customer.name || "Cliente"}</p>
+                        <p className="text-sm" style={{ color: "var(--ink-muted)" }}>{card.customer.phone || card.customer.email}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-slate-900">{card.stampsCount}/{program.stampsRequired}</p>
-                        <p className="text-xs text-slate-400">sellos</p>
+                        <p className="text-lg font-bold" style={{ color: "var(--wine)" }}>{card.stampsCount}/{program.stampsRequired}</p>
+                        <p className="text-xs" style={{ color: "var(--ink-muted)" }}>sellos</p>
                         {card.stampsCount > 0 && (
                           <button
                             onClick={() => handleRemoveStamp(card.id, card.customer.name || "este cliente")}
                             disabled={removingStamp === card.id}
-                            className="flex items-center gap-1 text-xs text-red-400 hover:text-red-600 mt-1 disabled:opacity-50"
+                            className="flex items-center gap-1 text-xs mt-1 disabled:opacity-50"
+                            style={{ color: "var(--rose)" }}
                           >
                             <MinusCircle size={12} />
                             {removingStamp === card.id ? "Quitando..." : "Quitar sello"}
@@ -407,11 +410,12 @@ export default function ProgramDetailPage({
                       {[...Array(program.stampsRequired)].map((_, i) => (
                         <div
                           key={i}
-                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium"
+                          style={
                             i < card.stampsCount
-                              ? "bg-indigo-500 text-white"
-                              : "bg-slate-100 text-slate-400 border border-slate-200"
-                          }`}
+                              ? { background: "var(--sand)", color: "var(--wine-dark)" }
+                              : { background: "var(--cream)", color: "var(--ink-muted)", border: "1px solid var(--line)" }
+                          }
                         >
                           {i < card.stampsCount ? "✓" : i + 1}
                         </div>
@@ -419,9 +423,14 @@ export default function ProgramDetailPage({
                     </div>
 
                     {card.isCompleted && card.reward && (
-                      <div className={`rounded-lg p-3 text-sm mb-2 ${
-                        card.reward.isRedeemed ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
-                      }`}>
+                      <div
+                        className="rounded-lg p-3 text-sm mb-2"
+                        style={
+                          card.reward.isRedeemed
+                            ? { background: "#E3EFE6", color: "#2F6B3F" }
+                            : { background: "#F1E4DC", color: "var(--wine-dark)" }
+                        }
+                      >
                         {card.reward.isRedeemed ? (
                           <span className="flex items-center gap-1.5">
                             <Check size={14} /> Recompensa canjeada
@@ -433,7 +442,8 @@ export default function ProgramDetailPage({
                             </span>
                             <button
                               onClick={() => handleRedeem(card.reward!.id)}
-                              className="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-medium hover:bg-amber-700"
+                              className="px-3 py-1 rounded-lg text-xs font-medium text-white"
+                              style={{ background: "var(--wine)" }}
                             >
                               Validar canje
                             </button>
@@ -442,12 +452,12 @@ export default function ProgramDetailPage({
                       </div>
                     )}
 
-                    {/* Historial de visitas */}
                     {card.visits.length > 0 && (
                       <div>
                         <button
                           onClick={() => setExpandedCard(isExpanded ? null : card.id)}
-                          className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600"
+                          className="flex items-center gap-1.5 text-xs"
+                          style={{ color: "var(--ink-muted)" }}
                         >
                           <Clock size={12} />
                           {isExpanded ? "Ocultar historial" : `Ver historial de visitas (${card.visits.length})`}
@@ -459,7 +469,8 @@ export default function ProgramDetailPage({
                             {card.visits.map((visit, idx) => (
                               <div
                                 key={visit.id}
-                                className="flex items-center justify-between text-xs text-slate-500 bg-slate-50 rounded px-3 py-1.5"
+                                className="flex items-center justify-between text-xs rounded px-3 py-1.5"
+                                style={{ background: "var(--cream)", color: "var(--ink-muted)" }}
                               >
                                 <span>Sello #{card.visits.length - idx}</span>
                                 <span>{formatDateTime(visit.createdAt)}</span>

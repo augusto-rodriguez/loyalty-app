@@ -1,21 +1,13 @@
 {
-  "name": "Fidelio - Tu tarjeta de sellos",
-  "short_name": "Fidelio",
+  "name": "EcoFideliza — Tu tarjeta de sellos",
+  "short_name": "EcoFideliza",
   "description": "Programa de fidelización con tarjeta de sellos digital",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#6366f1",
+  "background_color": "#F7F0EA",
+  "theme_color": "#541F32",
   "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }

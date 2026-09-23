@@ -2,122 +2,89 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, MapPin, TrendingUp, Gift, CheckCircle, Target, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
-interface Stats {
-  totalCustomers: number;
-  totalVisits: number;
-  recentVisits: number;
-  pendingRewards: number;
-  redeemedRewards: number;
-  totalPrograms: number;
+interface Program {
+  id: string;
+  name: string;
+  stampsRequired: number;
+  rewardTitle: string;
+  isActive: boolean;
+  qrCode: string;
+  _count: { customerCards: number };
 }
 
-const emptyStats: Stats = {
-  totalCustomers: 0,
-  totalVisits: 0,
-  recentVisits: 0,
-  pendingRewards: 0,
-  redeemedRewards: 0,
-  totalPrograms: 0,
-};
-
-export default function DashboardPage() {
-  const [stats, setStats] = useState<Stats | null>(null);
+export default function ProgramsPage() {
+  const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/dashboard")
-      .then((r) => {
-        if (!r.ok) throw new Error(`Error ${r.status}`);
-        return r.json();
-      })
-      .then((data) => {
-        setStats(data.stats || emptyStats);
-      })
-      .catch((err) => {
-        console.error("Dashboard fetch error:", err);
-        setError(err.message);
-        setStats(emptyStats);
-      })
+    fetch("/api/programs")
+      .then((r) => r.json())
+      .then((data) => setPrograms(data.programs))
       .finally(() => setLoading(false));
   }, []);
 
-  const cards = stats
-    ? [
-        { label: "Clientes", value: stats.totalCustomers, icon: <Users size={18} className="text-indigo-500" /> },
-        { label: "Visitas totales", value: stats.totalVisits, icon: <MapPin size={18} className="text-blue-500" /> },
-        { label: "Visitas (7 días)", value: stats.recentVisits, icon: <TrendingUp size={18} className="text-green-500" /> },
-        { label: "Premios pendientes", value: stats.pendingRewards, icon: <Gift size={18} className="text-amber-500" /> },
-        { label: "Premios canjeados", value: stats.redeemedRewards, icon: <CheckCircle size={18} className="text-emerald-500" /> },
-        { label: "Programas activos", value: stats.totalPrograms, icon: <Target size={18} className="text-violet-500" /> },
-      ]
-    : [];
+  if (loading) {
+    return <div className="animate-pulse" style={{ color: "var(--ink-muted)" }}>Cargando programas...</div>;
+  }
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Panel de control</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="font-display text-2xl italic" style={{ color: "var(--wine)" }}>Mis programas</h1>
         <Link
           href="/dashboard/programs/new"
-          className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-full text-white"
+          style={{ background: "var(--wine)" }}
         >
           <Plus size={16} />
           Nuevo programa
         </Link>
       </div>
 
-      {error && (
-        <div className="mb-4 bg-red-50 text-red-600 text-sm rounded-lg p-3">
-          Error al cargar estadísticas: {error}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-xl border border-slate-200 p-6 animate-pulse"
-            >
-              <div className="h-4 bg-slate-200 rounded w-20 mb-3" />
-              <div className="h-8 bg-slate-200 rounded w-16" />
-            </div>
-          ))}
+      {programs.length === 0 ? (
+        <div className="rounded-xl p-12 text-center" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
+          <p className="mb-4" style={{ color: "var(--ink-muted)" }}>Aún no tienes programas</p>
+          <Link href="/dashboard/programs/new" className="font-medium" style={{ color: "var(--rose)" }}>
+            Crear tu primer programa
+          </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {cards.map((card) => (
-            <div
-              key={card.label}
-              className="bg-white rounded-xl border border-slate-200 p-6"
+        <div className="space-y-4">
+          {programs.map((program) => (
+            <Link
+              key={program.id}
+              href={`/dashboard/programs/${program.id}`}
+              className="block rounded-xl p-6 transition"
+              style={{ background: "var(--paper)", border: "1px solid var(--line)" }}
             >
-              <div className="flex items-center gap-2 text-slate-500 text-sm mb-1">
-                {card.icon}
-                <span>{card.label}</span>
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-lg font-semibold" style={{ color: "var(--ink)" }}>{program.name}</h3>
+                    <span
+                      className="text-xs px-2 py-0.5 rounded-full"
+                      style={
+                        program.isActive
+                          ? { background: "#E3EFE6", color: "#2F6B3F" }
+                          : { background: "var(--line)", color: "var(--ink-muted)" }
+                      }
+                    >
+                      {program.isActive ? "Activo" : "Inactivo"}
+                    </span>
+                  </div>
+                  <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
+                    {program.stampsRequired} sellos → {program.rewardTitle}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-semibold" style={{ color: "var(--wine)" }}>{program._count.customerCards}</p>
+                  <p className="text-xs" style={{ color: "var(--ink-muted)" }}>clientes</p>
+                </div>
               </div>
-              <p className="text-3xl font-bold text-slate-900">{card.value}</p>
-            </div>
+            </Link>
           ))}
-        </div>
-      )}
-
-      {stats && stats.totalPrograms === 0 && !loading && (
-        <div className="mt-8 bg-indigo-50 rounded-xl p-8 text-center">
-          <p className="text-lg text-indigo-900 font-medium mb-2">
-            ¡Bienvenido! Crea tu primer programa de fidelización
-          </p>
-          <p className="text-indigo-600 mb-4">
-            Solo toma 2 minutos. Configura los sellos, el premio, y genera tu QR.
-          </p>
-          <Link
-            href="/dashboard/programs/new"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700"
-          >
-            <Plus size={18} />
-            Crear programa
-          </Link>
         </div>
       )}
     </div>

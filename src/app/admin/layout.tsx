@@ -18,14 +18,8 @@ export default function AdminLayout({
   useEffect(() => {
     fetch("/api/admin/stats")
       .then((r) => {
-        if (r.status === 403) {
-          setError("No tienes permisos de administrador");
-          return;
-        }
-        if (r.status === 401) {
-          router.push("/login");
-          return;
-        }
+        if (r.status === 403) { setError("No tienes permisos de administrador"); return; }
+        if (r.status === 401) { router.push("/login"); return; }
         if (!r.ok) throw new Error();
       })
       .catch(() => setError("Error de conexión"))
@@ -34,18 +28,18 @@ export default function AdminLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--wine-dark)" }}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: "var(--sand)" }} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--wine-dark)" }}>
         <div className="text-center">
-          <p className="text-red-600 font-medium mb-4">{error}</p>
-          <Link href="/dashboard" className="text-indigo-600 hover:underline">
+          <p className="font-medium mb-4" style={{ color: "var(--sand)" }}>{error}</p>
+          <Link href="/dashboard" className="hover:underline" style={{ color: "var(--rose-light)" }}>
             Volver al dashboard
           </Link>
         </div>
@@ -59,21 +53,18 @@ export default function AdminLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 pb-16 md:pb-0">
-      <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-10">
+    <div className="min-h-screen pb-16 md:pb-0" style={{ background: "var(--wine-dark)" }}>
+      <header className="sticky top-0 z-10" style={{ background: "var(--wine)", borderBottom: "1px solid #6B2E44" }}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <Link href="/admin" className="text-xl font-bold text-red-500">
+            <Link href="/admin" className="font-display text-xl italic" style={{ color: "var(--sand)" }}>
               Admin
             </Link>
-            <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(217,185,140,0.2)", color: "var(--sand)" }}>
               Panel interno
             </span>
           </div>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white"
-          >
+          <Link href="/dashboard" className="flex items-center gap-1.5 text-sm" style={{ color: "var(--rose-light)" }}>
             <ArrowLeft size={16} />
             Volver al dashboard
           </Link>
@@ -84,18 +75,13 @@ export default function AdminLayout({
         <nav className="w-56 shrink-0 hidden md:block">
           <div className="space-y-1">
             {navItems.map((item) => {
-              const active = item.exact
-                ? pathname === item.href
-                : pathname.startsWith(item.href);
+              const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-medium transition ${
-                    active
-                      ? "bg-slate-700 text-white"
-                      : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-                  }`}
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-medium"
+                  style={active ? { background: "var(--wine)", color: "var(--sand)" } : { color: "var(--rose-light)" }}
                 >
                   {item.icon} {item.label}
                 </Link>
@@ -107,19 +93,16 @@ export default function AdminLayout({
         <main className="flex-1 min-w-0">{children}</main>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 md:hidden z-10">
+      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-10" style={{ background: "var(--wine)", borderTop: "1px solid #6B2E44" }}>
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => {
-            const active = item.exact
-              ? pathname === item.href
-              : pathname.startsWith(item.href);
+            const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-1 px-4 py-2 ${
-                  active ? "text-red-400" : "text-slate-500"
-                }`}
+                className="flex flex-col items-center gap-1 px-4 py-2"
+                style={{ color: active ? "var(--sand)" : "var(--rose-light)" }}
               >
                 {item.icon}
                 <span className="text-xs font-medium">{item.label}</span>

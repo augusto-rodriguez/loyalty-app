@@ -1,75 +1,37 @@
 import Link from "next/link";
-import { Target } from "lucide-react";
 
 export default function TerminosPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <nav className="border-b border-slate-200 bg-white">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <Link href="/" className="text-xl font-bold text-indigo-600 flex items-center gap-2">
-            <Target size={24} />
-            Fidelio
-          </Link>
+    <div className="min-h-screen" style={{ background: "var(--cream)" }}>
+      <nav style={{ borderBottom: "1px solid var(--line)" }}>
+        <div className="max-w-3xl mx-auto px-6 py-4">
+          <Link href="/" className="font-display text-xl italic" style={{ color: "var(--wine)" }}>EcoFideliza</Link>
         </div>
       </nav>
-      <main className="max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-slate-900 mb-8">
-          Términos de Servicio
-        </h1>
-        <div className="bg-white rounded-xl border border-slate-200 p-8 space-y-6 text-slate-600 leading-relaxed">
+      <main className="max-w-3xl mx-auto px-6 py-12">
+        <h1 className="font-display text-3xl italic mb-8" style={{ color: "var(--wine)" }}>Términos de Servicio</h1>
+        <div className="rounded-2xl p-8 space-y-6 leading-relaxed" style={{ background: "var(--paper)", border: "1px solid var(--line)", color: "var(--ink)" }}>
           <section>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">
-              1. Descripción del servicio
-            </h2>
-            <p>
-              Fidelio es una plataforma de fidelización digital que permite a
-              negocios crear programas de tarjeta de sellos mediante códigos QR
-              para sus clientes.
-            </p>
+            <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--wine)" }}>1. Descripción del servicio</h2>
+            <p style={{ color: "var(--ink-muted)" }}>EcoFideliza es una plataforma de fidelización digital que permite a negocios crear programas de tarjeta de sellos mediante códigos QR.</p>
           </section>
           <section>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">
-              2. Uso aceptable
-            </h2>
-            <p>
-              El servicio debe usarse únicamente para programas de fidelización
-              legítimos. Queda prohibido el uso fraudulento, la manipulación de
-              sellos o visitas, y cualquier actividad que viole la legislación
-              vigente.
-            </p>
+            <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--wine)" }}>2. Uso aceptable</h2>
+            <p style={{ color: "var(--ink-muted)" }}>El servicio debe usarse únicamente para programas de fidelización legítimos. Queda prohibido el uso fraudulento.</p>
           </section>
           <section>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">
-              3. Responsabilidades del negocio
-            </h2>
-            <p>
-              Cada negocio es responsable de cumplir las recompensas ofrecidas a
-              sus clientes. Fidelio actúa como plataforma tecnológica y no es
-              responsable del cumplimiento de las promociones.
-            </p>
+            <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--wine)" }}>3. Responsabilidades del negocio</h2>
+            <p style={{ color: "var(--ink-muted)" }}>Cada negocio es responsable de cumplir las recompensas ofrecidas a sus clientes.</p>
           </section>
           <section>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">
-              4. Disponibilidad
-            </h2>
-            <p>
-              Nos esforzamos por mantener el servicio disponible, pero no
-              garantizamos un uptime del 100%. Realizamos mantenimientos
-              programados con aviso previo cuando es posible.
-            </p>
+            <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--wine)" }}>4. Disponibilidad</h2>
+            <p style={{ color: "var(--ink-muted)" }}>Nos esforzamos por mantener el servicio disponible, pero no garantizamos un uptime del 100%.</p>
           </section>
           <section>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">
-              5. Cancelación
-            </h2>
-            <p>
-              Puedes cancelar tu cuenta en cualquier momento. Al cancelar, tus
-              datos serán eliminados dentro de los 30 días siguientes.
-            </p>
+            <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--wine)" }}>5. Cancelación</h2>
+            <p style={{ color: "var(--ink-muted)" }}>Puedes cancelar tu cuenta en cualquier momento. Tus datos serán eliminados dentro de los 30 días siguientes.</p>
           </section>
-          <p className="text-sm text-slate-400">
-            Última actualización: Septiembre 2026
-          </p>
+          <p className="text-sm" style={{ color: "var(--ink-muted)" }}>Última actualización: Septiembre 2026</p>
         </div>
       </main>
     </div>

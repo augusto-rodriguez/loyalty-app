@@ -26,16 +26,17 @@ export default function ProgramsPage() {
   }, []);
 
   if (loading) {
-    return <div className="animate-pulse text-slate-400">Cargando programas...</div>;
+    return <div className="animate-pulse" style={{ color: "var(--ink-muted)" }}>Cargando programas...</div>;
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Mis Programas</h1>
+        <h1 className="font-display text-2xl italic" style={{ color: "var(--wine)" }}>Mis programas</h1>
         <Link
           href="/dashboard/programs/new"
-          className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-full text-white"
+          style={{ background: "var(--wine)" }}
         >
           <Plus size={16} />
           Nuevo programa
@@ -43,12 +44,9 @@ export default function ProgramsPage() {
       </div>
 
       {programs.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <p className="text-slate-500 mb-4">Aún no tienes programas</p>
-          <Link
-            href="/dashboard/programs/new"
-            className="text-indigo-600 font-medium hover:underline"
-          >
+        <div className="rounded-xl p-12 text-center" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
+          <p className="mb-4" style={{ color: "var(--ink-muted)" }}>Aún no tienes programas</p>
+          <Link href="/dashboard/programs/new" className="font-medium" style={{ color: "var(--rose)" }}>
             Crear tu primer programa
           </Link>
         </div>
@@ -58,33 +56,31 @@ export default function ProgramsPage() {
             <Link
               key={program.id}
               href={`/dashboard/programs/${program.id}`}
-              className="block bg-white rounded-xl border border-slate-200 p-6 hover:border-indigo-300 transition"
+              className="block rounded-xl p-6 transition"
+              style={{ background: "var(--paper)", border: "1px solid var(--line)" }}
             >
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-semibold text-slate-900">
-                      {program.name}
-                    </h3>
+                    <h3 className="text-lg font-semibold" style={{ color: "var(--ink)" }}>{program.name}</h3>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
+                      className="text-xs px-2 py-0.5 rounded-full"
+                      style={
                         program.isActive
-                          ? "bg-green-100 text-green-700"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
+                          ? { background: "#E3EFE6", color: "#2F6B3F" }
+                          : { background: "var(--line)", color: "var(--ink-muted)" }
+                      }
                     >
                       {program.isActive ? "Activo" : "Inactivo"}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
                     {program.stampsRequired} sellos → {program.rewardTitle}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-slate-900">
-                    {program._count.customerCards}
-                  </p>
-                  <p className="text-xs text-slate-400">clientes</p>
+                  <p className="text-2xl font-semibold" style={{ color: "var(--wine)" }}>{program._count.customerCards}</p>
+                  <p className="text-xs" style={{ color: "var(--ink-muted)" }}>clientes</p>
                 </div>
               </div>
             </Link>

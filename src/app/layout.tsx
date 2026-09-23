@@ -1,20 +1,34 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Work_Sans } from "next/font/google";
 import "./globals.css";
 
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+});
+
+const workSans = Work_Sans({
+  subsets: ["latin"],
+  variable: "--font-worksans",
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Fidelio - Fidelización para tu negocio",
+  title: "EcoFideliza — Fidelización para tu negocio",
   description:
     "Programa de fidelización con tarjeta de sellos digital y código QR. Sin apps, sin complicaciones.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Fidelio",
+    title: "EcoFideliza",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#6366f1",
+  themeColor: "#541F32",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -26,8 +40,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className="antialiased">{children}</body>
+    <html lang="es" className={`${fraunces.variable} ${workSans.variable}`}>
+      <body className="antialiased font-body">{children}</body>
     </html>
   );
 }

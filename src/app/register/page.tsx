@@ -3,16 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Target } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-  });
+  const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,17 +18,14 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-
       router.push("/dashboard");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error al registrar");
@@ -43,76 +34,77 @@ export default function RegisterPage() {
     }
   }
 
+  const inputStyle = {
+    border: "1px solid var(--line)",
+    ["--tw-ring-color" as string]: "var(--rose)",
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--cream)" }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-3xl font-bold text-indigo-600">
-            <Target size={32} />
-            Fidelio
+          <Link href="/" className="font-display text-3xl italic" style={{ color: "var(--wine)" }}>
+            EcoFideliza
           </Link>
-          <p className="text-slate-500 mt-2">Registra tu negocio en 2 minutos</p>
+          <p className="mt-2" style={{ color: "var(--ink-muted)" }}>Registra tu negocio en dos minutos</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl border border-slate-200 p-8 space-y-5"
+          className="rounded-2xl p-8 space-y-5"
+          style={{ background: "var(--paper)", border: "1px solid var(--line)" }}
         >
           {error && (
-            <div className="bg-red-50 text-red-600 text-sm rounded-lg p-3">
+            <div className="text-sm rounded-lg p-3" style={{ background: "#FBE9EC", color: "var(--wine-dark)" }}>
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Nombre del negocio
-            </label>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink)" }}>Nombre del negocio</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => update("name", e.target.value)}
-              placeholder="Ej: Café Don Pedro"
-              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+              placeholder="Ej: Panadería Trigo Dorado"
+              className="w-full px-4 py-2.5 rounded-lg outline-none focus:ring-2"
+              style={inputStyle}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink)" }}>Email</label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-lg outline-none focus:ring-2"
+              style={inputStyle}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Teléfono (opcional)
-            </label>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink)" }}>Teléfono (opcional)</label>
             <input
               type="tel"
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-lg outline-none focus:ring-2"
+              style={inputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Contraseña
-            </label>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink)" }}>Contraseña</label>
             <input
               type="password"
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
               minLength={6}
-              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-lg outline-none focus:ring-2"
+              style={inputStyle}
               required
             />
           </div>
@@ -120,14 +112,15 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+            className="w-full py-3 font-semibold rounded-lg text-white disabled:opacity-50"
+            style={{ background: "var(--wine)" }}
           >
             {loading ? "Creando cuenta..." : "Crear cuenta gratis"}
           </button>
 
-          <p className="text-center text-sm text-slate-500">
+          <p className="text-center text-sm" style={{ color: "var(--ink-muted)" }}>
             ¿Ya tienes cuenta?{" "}
-            <Link href="/login" className="text-indigo-600 font-medium">
+            <Link href="/login" className="font-medium" style={{ color: "var(--rose)" }}>
               Inicia sesión
             </Link>
           </p>

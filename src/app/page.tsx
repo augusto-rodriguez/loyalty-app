@@ -1,25 +1,27 @@
 import Link from "next/link";
-import { Target, Smartphone, Zap, Gift } from "lucide-react";
+import { Check } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <nav className="border-b border-slate-200 bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-indigo-600 flex items-center gap-2">
-            <Target size={28} />
-            Fidelio
-          </h1>
-          <div className="flex gap-3">
+    <div className="min-h-screen" style={{ background: "var(--cream)" }}>
+      {/* Nav */}
+      <nav className="border-b" style={{ borderColor: "var(--line)" }}>
+        <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
+          <span className="font-display text-2xl italic" style={{ color: "var(--wine)" }}>
+            EcoFideliza
+          </span>
+          <div className="flex items-center gap-6">
             <Link
               href="/login"
-              className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900"
+              className="text-sm font-medium"
+              style={{ color: "var(--ink-muted)" }}
             >
               Iniciar sesión
             </Link>
             <Link
               href="/register"
-              className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="px-5 py-2.5 text-sm font-medium rounded-full text-white"
+              style={{ background: "var(--wine)" }}
             >
               Registrar mi negocio
             </Link>
@@ -27,68 +29,112 @@ export default function Home() {
         </div>
       </nav>
 
-      <main className="flex-1 flex items-center">
-        <div className="max-w-6xl mx-auto px-4 py-20 text-center">
-          <h2 className="text-5xl font-bold text-slate-900 mb-6">
-            Fideliza a tus clientes
-            <br />
-            <span className="text-indigo-600">sin complicaciones</span>
-          </h2>
-          <p className="text-xl text-slate-500 mb-10 max-w-2xl mx-auto">
-            Tarjeta de sellos digital con código QR. Tu cliente escanea, acumula
-            visitas y gana premios. Sin apps, sin complicaciones. Listo en 5 minutos.
+      {/* Hero — asymmetric, stamp card as the visual */}
+      <section className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-5 gap-12 items-center">
+        <div className="md:col-span-3">
+          <h1 className="font-display text-5xl md:text-6xl leading-[1.08]" style={{ color: "var(--wine)" }}>
+            La tarjeta de sellos de tu negocio, ahora en el celular de tus clientes
+          </h1>
+          <p className="mt-6 text-lg max-w-md leading-relaxed" style={{ color: "var(--ink-muted)" }}>
+            Escanean un código, acumulan visitas, desbloquean premios. Sin
+            aplicaciones que instalar, sin tarjetitas que se pierden en la billetera.
           </p>
-          <Link
-            href="/register"
-            className="inline-block px-8 py-4 text-lg font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200"
-          >
-            Empezar gratis
-          </Link>
+          <div className="mt-9 flex items-center gap-5">
+            <Link
+              href="/register"
+              className="px-7 py-3.5 text-base font-medium rounded-full text-white"
+              style={{ background: "var(--wine)" }}
+            >
+              Crear mi programa
+            </Link>
+            <span className="text-sm" style={{ color: "var(--ink-muted)" }}>
+              Listo en cinco minutos
+            </span>
+          </div>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mt-20 text-left">
-            <div className="bg-white rounded-xl p-6 border border-slate-200">
-              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4">
-                <Smartphone size={22} className="text-indigo-600" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Sin app para el cliente</h3>
-              <p className="text-slate-500">
-                Tu cliente escanea el QR con su cámara y listo. No necesita descargar nada.
+        {/* Stamp card visual — the hero image */}
+        <div className="md:col-span-2">
+          <div
+            className="rounded-[28px] p-7 shadow-xl"
+            style={{ background: "var(--paper)", boxShadow: "0 24px 60px -20px rgba(84,31,50,0.35)" }}
+          >
+            <p className="font-display italic text-lg" style={{ color: "var(--wine)" }}>
+              Panadería Trigo Dorado
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: "var(--ink-muted)" }}>
+              6 de 8 sellos — te falta poco
+            </p>
+            <div className="grid grid-cols-4 gap-3 mt-5">
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-square rounded-full flex items-center justify-center"
+                  style={
+                    i < 6
+                      ? { background: "var(--sand)" }
+                      : { border: "2px dashed var(--line)" }
+                  }
+                >
+                  {i < 6 && <Check size={16} color="var(--wine-dark)" strokeWidth={2.5} />}
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 pt-5 border-t flex items-center justify-between" style={{ borderColor: "var(--line)" }}>
+              <span className="text-sm" style={{ color: "var(--ink-muted)" }}>Premio</span>
+              <span className="text-sm font-medium" style={{ color: "var(--wine)" }}>Pan del día gratis</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works — inline list, not boxed icon grid */}
+      <section className="border-t" style={{ borderColor: "var(--line)", background: "var(--paper)" }}>
+        <div className="max-w-4xl mx-auto px-6 py-20">
+          <h2 className="font-display text-3xl italic mb-10" style={{ color: "var(--wine)" }}>
+            Cómo funciona
+          </h2>
+          <div className="space-y-8">
+            <div className="flex gap-6 items-start">
+              <span className="font-display text-2xl italic shrink-0 w-10" style={{ color: "var(--sand-dark)" }}>
+                uno
+              </span>
+              <p className="text-lg leading-relaxed" style={{ color: "var(--ink)" }}>
+                Configuras tu programa: cuántas visitas se necesitan y qué premio
+                desbloquean. Elige una plantilla por rubro o hazlo a tu manera.
               </p>
             </div>
-            <div className="bg-white rounded-xl p-6 border border-slate-200">
-              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4">
-                <Zap size={22} className="text-indigo-600" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Listo en 5 minutos</h3>
-              <p className="text-slate-500">
-                Crea tu cuenta, configura tu programa y genera tu QR. Así de simple.
+            <div className="flex gap-6 items-start">
+              <span className="font-display text-2xl italic shrink-0 w-10" style={{ color: "var(--sand-dark)" }}>
+                dos
+              </span>
+              <p className="text-lg leading-relaxed" style={{ color: "var(--ink)" }}>
+                Imprimes el código QR y lo dejas en el mesón. Tus clientes lo
+                escanean con la cámara — no necesitan descargar nada.
               </p>
             </div>
-            <div className="bg-white rounded-xl p-6 border border-slate-200">
-              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4">
-                <Gift size={22} className="text-indigo-600" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Premios automáticos</h3>
-              <p className="text-slate-500">
-                Cuando tu cliente completa los sellos, desbloquea su premio automáticamente.
+            <div className="flex gap-6 items-start">
+              <span className="font-display text-2xl italic shrink-0 w-10" style={{ color: "var(--sand-dark)" }}>
+                tres
+              </span>
+              <p className="text-lg leading-relaxed" style={{ color: "var(--ink)" }}>
+                Cada visita suma un sello. Al completar la tarjeta, el premio se
+                desbloquea solo y tú lo validas desde tu panel.
               </p>
             </div>
           </div>
         </div>
-      </main>
+      </section>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-slate-400">
-            © {new Date().getFullYear()} Fidelio. Todos los derechos reservados.
+      {/* Footer */}
+      <footer className="border-t" style={{ borderColor: "var(--line)" }}>
+        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm" style={{ color: "var(--ink-muted)" }}>
+            © {new Date().getFullYear()} EcoFideliza
           </p>
-          <div className="flex gap-6 text-sm text-slate-400">
-            <Link href="/privacidad" className="hover:text-slate-600">
-              Privacidad
-            </Link>
-            <Link href="/terminos" className="hover:text-slate-600">
-              Términos
-            </Link>
+          <div className="flex gap-6 text-sm" style={{ color: "var(--ink-muted)" }}>
+            <Link href="/privacidad">Privacidad</Link>
+            <Link href="/terminos">Términos</Link>
           </div>
         </div>
       </footer>
