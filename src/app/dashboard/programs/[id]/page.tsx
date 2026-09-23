@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft, Copy, Check, Download, Pause, Play, Trash2, Gift,
-  ShieldCheck, Eye, EyeOff, RefreshCw, ChevronDown, ChevronUp, Clock,
+  ShieldCheck, Eye, EyeOff, RefreshCw, ChevronDown, ChevronUp, Clock, MinusCircle,
 } from "lucide-react";
 
 interface Visit {
@@ -63,6 +63,7 @@ export default function ProgramDetailPage({
   const [regenerating, setRegenerating] = useState(false);
   const [togglingPin, setTogglingPin] = useState(false);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [removingStamp, setRemovingStamp] = useState<string | null>(null);
 
   useEffect(() => {
     loadProgram();
@@ -144,6 +145,22 @@ export default function ProgramDetailPage({
     if (!confirm("¿Confirmar canje de recompensa?")) return;
     const res = await fetch(`/api/rewards/${rewardId}/redeem`, { method: "POST" });
     if (res.ok) loadProgram();
+  }
+
+  async function handleRemoveStamp(cardId: string, customerName: string) {
+    if (!confirm(`¿Quitar el sello más reciente de ${customerName}? Esta acción no se puede deshacer.`)) return;
+    setRemovingStamp(cardId);
+    try {
+      const res = await fetch(`/api/customer-cards/${cardId}/remove-stamp`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        loadProgram();
+      } else {
+        alert(data.error || "Error al quitar el sello");
+      }
+    } finally {
+      setRemovingStamp(null);
+    }
   }
 
   function copyScanUrl() {
@@ -373,6 +390,16 @@ export default function ProgramDetailPage({
                       <div className="text-right">
                         <p className="text-lg font-bold text-slate-900">{card.stampsCount}/{program.stampsRequired}</p>
                         <p className="text-xs text-slate-400">sellos</p>
+                        {card.stampsCount > 0 && (
+                          <button
+                            onClick={() => handleRemoveStamp(card.id, card.customer.name || "este cliente")}
+                            disabled={removingStamp === card.id}
+                            className="flex items-center gap-1 text-xs text-red-400 hover:text-red-600 mt-1 disabled:opacity-50"
+                          >
+                            <MinusCircle size={12} />
+                            {removingStamp === card.id ? "Quitando..." : "Quitar sello"}
+                          </button>
+                        )}
                       </div>
                     </div>
 

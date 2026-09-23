@@ -35,7 +35,7 @@ sudo systemctl enable postgresql
 # ============ PASO 5: CREAR BASE DE DATOS ============
 sudo -u postgres psql << SQL
 CREATE DATABASE fidelio;
-CREATE USER fidelio_user WITH ENCRYPTED PASSWORD 'CAMBIA_ESTA_PASSWORD_123';
+CREATE USER fidelio_user WITH ENCRYPTED PASSWORD 'City-1105';
 GRANT ALL PRIVILEGES ON DATABASE fidelio TO fidelio_user;
 ALTER DATABASE fidelio OWNER TO fidelio_user;
 \c fidelio
