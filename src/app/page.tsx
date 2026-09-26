@@ -6,21 +6,21 @@ export default function Home() {
     <div className="min-h-screen" style={{ background: "var(--cream)" }}>
       {/* Nav */}
       <nav className="border-b" style={{ borderColor: "var(--line)" }}>
-        <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
-          <span className="font-display text-2xl italic" style={{ color: "var(--wine)" }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center gap-2">
+          <span className="font-display text-xl sm:text-2xl italic shrink-0" style={{ color: "var(--wine)" }}>
             EcoFideliza
           </span>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 sm:gap-6">
             <Link
               href="/login"
-              className="text-sm font-medium"
+              className="text-xs sm:text-sm font-medium whitespace-nowrap px-2 sm:px-0"
               style={{ color: "var(--ink-muted)" }}
             >
               Iniciar sesión
             </Link>
             <Link
               href="/register"
-              className="px-5 py-2.5 text-sm font-medium rounded-full text-white"
+              className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-full text-white whitespace-nowrap"
               style={{ background: "var(--wine)" }}
             >
               Registrar mi negocio
@@ -57,7 +57,7 @@ export default function Home() {
         <div className="md:col-span-2">
           <div
             className="rounded-[28px] p-7 shadow-xl"
-            style={{ background: "var(--paper)", boxShadow: "0 24px 60px -20px rgba(84,31,50,0.35)" }}
+            style={{ background: "var(--paper)", boxShadow: "0 24px 60px -20px rgba(16,185,129,0.35)" }}
           >
             <p className="font-display italic text-lg" style={{ color: "var(--wine)" }}>
               Panadería Trigo Dorado
@@ -76,7 +76,7 @@ export default function Home() {
                       : { border: "2px dashed var(--line)" }
                   }
                 >
-                  {i < 6 && <Check size={16} color="var(--wine-dark)" strokeWidth={2.5} />}
+                  {i < 6 && <Check size={16} color="white" strokeWidth={2.5} />}
                 </div>
               ))}
             </div>
@@ -88,7 +88,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works — inline list, not boxed icon grid */}
+      {/* How it works — numbered list */}
       <section className="border-t" style={{ borderColor: "var(--line)", background: "var(--paper)" }}>
         <div className="max-w-4xl mx-auto px-6 py-20">
           <h2 className="font-display text-3xl italic mb-10" style={{ color: "var(--wine)" }}>
@@ -96,28 +96,37 @@ export default function Home() {
           </h2>
           <div className="space-y-8">
             <div className="flex gap-6 items-start">
-              <span className="font-display text-2xl italic shrink-0 w-10" style={{ color: "var(--sand-dark)" }}>
-                uno
+              <span
+                className="font-display text-xl shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: "var(--cream)", color: "var(--wine)", border: "1.5px solid var(--sand)" }}
+              >
+                1
               </span>
-              <p className="text-lg leading-relaxed" style={{ color: "var(--ink)" }}>
+              <p className="text-lg leading-relaxed pt-1.5" style={{ color: "var(--ink)" }}>
                 Configuras tu programa: cuántas visitas se necesitan y qué premio
                 desbloquean. Elige una plantilla por rubro o hazlo a tu manera.
               </p>
             </div>
             <div className="flex gap-6 items-start">
-              <span className="font-display text-2xl italic shrink-0 w-10" style={{ color: "var(--sand-dark)" }}>
-                dos
+              <span
+                className="font-display text-xl shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: "var(--cream)", color: "var(--wine)", border: "1.5px solid var(--sand)" }}
+              >
+                2
               </span>
-              <p className="text-lg leading-relaxed" style={{ color: "var(--ink)" }}>
+              <p className="text-lg leading-relaxed pt-1.5" style={{ color: "var(--ink)" }}>
                 Imprimes el código QR y lo dejas en el mesón. Tus clientes lo
                 escanean con la cámara — no necesitan descargar nada.
               </p>
             </div>
             <div className="flex gap-6 items-start">
-              <span className="font-display text-2xl italic shrink-0 w-10" style={{ color: "var(--sand-dark)" }}>
-                tres
+              <span
+                className="font-display text-xl shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: "var(--cream)", color: "var(--wine)", border: "1.5px solid var(--sand)" }}
+              >
+                3
               </span>
-              <p className="text-lg leading-relaxed" style={{ color: "var(--ink)" }}>
+              <p className="text-lg leading-relaxed pt-1.5" style={{ color: "var(--ink)" }}>
                 Cada visita suma un sello. Al completar la tarjeta, el premio se
                 desbloquea solo y tú lo validas desde tu panel.
               </p>
