@@ -33,8 +33,8 @@ export default function AdminPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {[...Array(12)].map((_, i) => (
           <div key={i} className="rounded-xl p-6 animate-pulse" style={{ background: "var(--wine)" }}>
-            <div className="h-4 rounded w-20 mb-3" style={{ background: "#6B2E44" }} />
-            <div className="h-8 rounded w-16" style={{ background: "#6B2E44" }} />
+            <div className="h-4 rounded w-20 mb-3" style={{ background: "#0F9C6C" }} />
+            <div className="h-8 rounded w-16" style={{ background: "#0F9C6C" }} />
           </div>
         ))}
       </div>
@@ -76,7 +76,7 @@ export default function AdminPage() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {section.cards.map((card) => (
-                <div key={card.label} className="rounded-xl p-5" style={{ background: "var(--wine)", border: "1px solid #6B2E44" }}>
+                <div key={card.label} className="rounded-xl p-5" style={{ background: "var(--wine)", border: "1px solid #0F9C6C" }}>
                   <div className="flex items-center gap-2 text-sm mb-1" style={{ color: "var(--sand)" }}>
                     {card.icon}
                     <span>{card.label}</span>

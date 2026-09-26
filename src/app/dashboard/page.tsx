@@ -67,7 +67,7 @@ export default function ProgramsPage() {
                       className="text-xs px-2 py-0.5 rounded-full"
                       style={
                         program.isActive
-                          ? { background: "#E3EFE6", color: "#2F6B3F" }
+                          ? { background: "#DCFCE7", color: "#15803D" }
                           : { background: "var(--line)", color: "var(--ink-muted)" }
                       }
                     >

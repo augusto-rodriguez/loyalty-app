@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --wine: #541F32;
-  --wine-dark: #3D1624;
-  --rose: #A95C72;
-  --rose-light: #C68A9B;
-  --sand: #D9B98C;
-  --sand-dark: #C7A16D;
-  --cream: #F7F0EA;
-  --paper: #FFFDFB;
-  --ink: #2B1420;
-  --ink-muted: #7A6570;
-  --line: #E5D9CD;
+  --wine: #10B981;
+  --wine-dark: #0B815C;
+  --rose: #2563EB;
+  --rose-light: #60A5FA;
+  --sand: #06B6D4;
+  --sand-dark: #0891B2;
+  --cream: #F8FFFC;
+  --paper: #FFFFFF;
+  --ink: #172033;
+  --ink-muted: #64748B;
+  --line: #DCEEE7;
 }
 
 body {
@@ -29,5 +29,5 @@ body {
 
 ::selection {
   background: var(--sand);
-  color: var(--wine-dark);
+  color: white;
 }

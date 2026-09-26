@@ -90,7 +90,7 @@ export default function NewProgramPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="rounded-xl p-8 space-y-5" style={{ background: "var(--paper)", border: "1px solid var(--line)" }}>
-        {error && <div className="text-sm rounded-lg p-3" style={{ background: "#FBE9EC", color: "var(--wine-dark)" }}>{error}</div>}
+        {error && <div className="text-sm rounded-lg p-3" style={{ background: "#FEE2E2", color: "#B91C1C" }}>{error}</div>}
 
         <div>
           <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink)" }}>Nombre del programa</label>
@@ -122,7 +122,7 @@ export default function NewProgramPage() {
         </div>
 
         {/* PIN toggle */}
-        <div className="rounded-lg p-4" style={{ background: "#F1E4DC" }}>
+        <div className="rounded-lg p-4" style={{ background: "#D1FAE5" }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShieldCheck size={18} style={{ color: "var(--wine)" }} />

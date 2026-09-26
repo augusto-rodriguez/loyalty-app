@@ -141,7 +141,7 @@ export default function ScanPage({
             </p>
 
             {error && (
-              <div className="text-sm rounded-lg p-3 flex items-start gap-2" style={{ background: "#FBE9EC", color: "var(--wine-dark)" }}>
+              <div className="text-sm rounded-lg p-3 flex items-start gap-2" style={{ background: "#FEE2E2", color: "#B91C1C" }}>
                 <AlertCircle size={16} className="mt-0.5 shrink-0" />
                 {error}
               </div>
@@ -276,7 +276,7 @@ export default function ScanPage({
             </div>
 
             {card.isCompleted && card.rewardAvailable && (
-              <div className="rounded-2xl p-6 text-center" style={{ background: "#F1E4DC", border: "2px solid var(--sand-dark)" }}>
+              <div className="rounded-2xl p-6 text-center" style={{ background: "#D1FAE5", border: "2px solid var(--sand-dark)" }}>
                 <PartyPopper size={36} style={{ color: "var(--wine)" }} className="mx-auto mb-2" />
                 <p className="font-bold text-lg mb-1" style={{ color: "var(--wine)" }}>Recompensa desbloqueada</p>
                 <p className="text-sm" style={{ color: "var(--ink-muted)" }}>

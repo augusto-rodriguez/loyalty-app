@@ -79,7 +79,7 @@ export default function ProgramDetailPage({
           QRCode.toDataURL(scanUrl, {
             width: 300,
             margin: 2,
-            color: { dark: "#541F32", light: "#FFFDFB" },
+            color: { dark: "#0B815C", light: "#FFFFFF" },
           }).then(setQrDataUrl);
         });
       })
@@ -246,7 +246,7 @@ export default function ProgramDetailPage({
               </div>
               <div className="flex justify-between">
                 <span style={{ color: "var(--ink-muted)" }}>Estado</span>
-                <span className="font-semibold" style={{ color: program.isActive ? "#2F6B3F" : "var(--ink-muted)" }}>
+                <span className="font-semibold" style={{ color: program.isActive ? "#15803D" : "var(--ink-muted)" }}>
                   {program.isActive ? "Activo" : "Inactivo"}
                 </span>
               </div>
@@ -287,7 +287,7 @@ export default function ProgramDetailPage({
 
           {/* PIN actual */}
           {program.requiresPin && dailyPin && (
-            <div className="rounded-xl p-5" style={{ background: "#F1E4DC" }}>
+            <div className="rounded-xl p-5" style={{ background: "#D1FAE5" }}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <ShieldCheck size={18} style={{ color: "var(--wine)" }} />
@@ -350,8 +350,8 @@ export default function ProgramDetailPage({
               className="flex items-center justify-center gap-1.5 w-full py-2 text-sm font-medium rounded-lg"
               style={
                 program.isActive
-                  ? { border: "1px solid var(--sand-dark)", color: "#8A5A1A" }
-                  : { border: "1px solid #8FBF9A", color: "#2F6B3F" }
+                  ? { border: "1px solid var(--sand-dark)", color: "#0E7490" }
+                  : { border: "1px solid #6EE7B7", color: "#15803D" }
               }
             >
               {program.isActive ? <Pause size={14} /> : <Play size={14} />}
@@ -427,8 +427,8 @@ export default function ProgramDetailPage({
                         className="rounded-lg p-3 text-sm mb-2"
                         style={
                           card.reward.isRedeemed
-                            ? { background: "#E3EFE6", color: "#2F6B3F" }
-                            : { background: "#F1E4DC", color: "var(--wine-dark)" }
+                            ? { background: "#DCFCE7", color: "#15803D" }
+                            : { background: "#D1FAE5", color: "var(--wine-dark)" }
                         }
                       >
                         {card.reward.isRedeemed ? (

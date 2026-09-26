@@ -54,13 +54,13 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen pb-16 md:pb-0" style={{ background: "var(--wine-dark)" }}>
-      <header className="sticky top-0 z-10" style={{ background: "var(--wine)", borderBottom: "1px solid #6B2E44" }}>
+      <header className="sticky top-0 z-10" style={{ background: "var(--wine)", borderBottom: "1px solid #0F9C6C" }}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Link href="/admin" className="font-display text-xl italic" style={{ color: "var(--sand)" }}>
               Admin
             </Link>
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(217,185,140,0.2)", color: "var(--sand)" }}>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(6,182,212,0.2)", color: "var(--sand)" }}>
               Panel interno
             </span>
           </div>
@@ -93,7 +93,7 @@ export default function AdminLayout({
         <main className="flex-1 min-w-0">{children}</main>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-10" style={{ background: "var(--wine)", borderTop: "1px solid #6B2E44" }}>
+      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-10" style={{ background: "var(--wine)", borderTop: "1px solid #0F9C6C" }}>
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => {
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);

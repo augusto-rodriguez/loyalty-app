@@ -47,7 +47,7 @@ export default function LoginPage() {
           style={{ background: "var(--paper)", border: "1px solid var(--line)" }}
         >
           {error && (
-            <div className="text-sm rounded-lg p-3" style={{ background: "#FBE9EC", color: "var(--wine-dark)" }}>
+            <div className="text-sm rounded-lg p-3" style={{ background: "#FEE2E2", color: "#B91C1C" }}>
               {error}
             </div>
           )}

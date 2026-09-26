@@ -71,7 +71,7 @@ export default function DashboardLayout({
               <Link
                 href="/admin"
                 className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium"
-                style={{ background: "#FBE9EC", color: "var(--wine-dark)" }}
+                style={{ background: "#FEE2E2", color: "#B91C1C" }}
               >
                 <Settings size={14} />
                 Admin
@@ -101,7 +101,7 @@ export default function DashboardLayout({
                   className="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-medium transition"
                   style={
                     active
-                      ? { background: "#F1E4DC", color: "var(--wine)" }
+                      ? { background: "#D1FAE5", color: "var(--wine)" }
                       : { color: "var(--ink-muted)" }
                   }
                 >
